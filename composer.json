@@ -1,0 +1,22 @@
+{
+    "name": "flexshopper/module-payments",
+    "description": "Integration with FlexShopper payment solutions",
+    "type": "magento2-module",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Trellis",
+            "email": "contact@trellis.co"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "FlexShopper\\Payments\\": ""
+        },
+        "files": [
+            "registration.php"
+        ]
+    }
+}
