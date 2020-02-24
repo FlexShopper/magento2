@@ -7,5 +7,4 @@ pipelines:
         deployment: production
         script:
           - echo "Deploying to test environment"
-          - apt update && apt install -y openssh-client;
           - ssh -A ec2-user@52.54.242.58 'cd /var/www/ee234 && php bin/magento maintenance:enable && php bin/magento setup:upgrade && php bin/magento setup:di:compile &&  php bin/magento setup:static-content:deploy -j1  && php bin/magento cache:clean && php bin/magento maintenance:disable'
