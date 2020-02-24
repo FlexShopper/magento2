@@ -1,10 +1,10 @@
-image: debian/stable
+image: atlassian/default-image:latest
 
 pipelines:
   default:
     - step:
         name: FlexShopper production deploy
-        deployment: test
+        deployment: production
         script:
           - echo "Deploying to test environment"
           - apt update && apt install -y openssh-client;
