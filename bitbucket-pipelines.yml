@@ -1,4 +1,5 @@
 image: debian/stable
+
 pipelines:
   default:
     - step:
