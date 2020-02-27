@@ -53,13 +53,27 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
     ) {
         $items = $quote->getItems();
 
+        if (!$this->apiCredentialsExist()) {
+            return false;
+        }
+
         foreach($items as $item) {
-            if ($item->getProduct()->getData('flexshopper_leasing_enabled') === false) {
+            if ($item->getProduct()->getData('flexshopper_leasing_enabled') == false) { // this = to '0' or '1', or null
                 return false;
             }
         }
 
         return parent::isAvailable($quote);
+    }
+
+    public function apiCredentialsExist() {
+        if ($this->_scopeConfig->getValue('payment/flexshopperpayments/auth_key') == '' ||
+            $this->_scopeConfig->getValue('payment/flexshopperpayments/api_key') == ''
+        ) {
+            return false;
+        }
+
+        return true;
     }
 }
 

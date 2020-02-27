@@ -22,6 +22,9 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
     /**  @var \PHPUnit_Framework_MockObject_MockObject */
     protected $currencyPrice;
 
+    /**  @var \PHPUnit_Framework_MockObject_MockObject */
+    protected $scopeConfig;
+
     public function setUp()
     {
         $paymentData  = $this->createMock(\Magento\Payment\Helper\Data::class);
@@ -70,8 +73,8 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
         $product = $this->createMock(\Magento\Catalog\Model\Product::class);
         $product->expects($this->once())
             ->method('getData')
-            ->with('flexshopper_leasing_enabled')
-            ->will($this->returnValue(true));
+            ->with($this->equalTo('flexshopper_leasing_enabled'))
+            ->will($this->returnValue('1'));
 
         $item = $this->createMock(\Magento\Quote\Model\Quote\Item::class);
         $item->expects($this->once())
@@ -112,8 +115,8 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
         $products[0] = $this->createMock(\Magento\Catalog\Model\Product::class);
         $products[0]->expects($this->once())
             ->method('getData')
-            ->with('flexshopper_leasing_enabled')
-            ->will($this->returnValue(true));
+            ->with($this->equalTo('flexshopper_leasing_enabled'))
+            ->will($this->returnValue('1'));
 
         $items[0] = $this->createMock(\Magento\Quote\Model\Quote\Item::class);
         $items[0]->expects($this->once())
@@ -123,8 +126,8 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
         $products[1] = $this->createMock(\Magento\Catalog\Model\Product::class);
         $products[1]->expects($this->once())
             ->method('getData')
-            ->with('flexshopper_leasing_enabled')
-            ->will($this->returnValue(false));
+            ->with($this->equalTo('flexshopper_leasing_enabled'))
+            ->will($this->returnValue('0'));
 
         $items[1] = $this->createMock(\Magento\Quote\Model\Quote\Item::class);
         $items[1]->expects($this->once())
@@ -145,6 +148,140 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(true));
 
         $this->assertEquals(false, $this->fs->isAvailable($quote));
+    }
+
+    public function testApiCredentialsNotExist()
+    {
+        $map = [
+            ['payment/flexshopperpayments/auth_key', 'default', null, ''],
+            ['payment/flexshopperpayments/api_key', 'default', null,  ''],
+            ['payment/flexshopperpayments/active', 'store', null,  '1']
+        ];
+
+        $this->scopeConfig->expects($this->exactly(1))
+            ->method('getValue')
+            ->with($this->logicalOr(
+                $this->equalTo('payment/flexshopperpayments/active'),
+                $this->equalTo('payment/flexshopperpayments/auth_key'),
+                $this->equalTo('payment/flexshopperpayments/api_key')
+            ))
+            ->will($this->returnValueMap($map));
+
+        $this->assertEquals(false, $this->fs->apiCredentialsExist());
+    }
+
+    public function testApiCredentialsExist()
+    {
+        $map = [
+            ['payment/flexshopperpayments/auth_key', 'default', null, 'test'],
+            ['payment/flexshopperpayments/api_key', 'default', null, 'test'],
+            ['payment/flexshopperpayments/active', 'store', null, '1']
+        ];
+
+        $this->scopeConfig->expects($this->exactly(2))
+            ->method('getValue')
+            ->with($this->logicalOr(
+                $this->equalTo('payment/flexshopperpayments/active'),
+                $this->equalTo('payment/flexshopperpayments/auth_key'),
+                $this->equalTo('payment/flexshopperpayments/api_key')
+            ))
+            ->will($this->returnValueMap($map));
+
+        $this->assertEquals(true, $this->fs->apiCredentialsExist());
+    }
+
+    public function testApiCredentialsInIsAvailableNotExist()
+    {
+        $quote = null;
+        $grandTotal = 1000;
+
+        $quote = $this->createMock(\Magento\Quote\Model\Quote::class);
+
+        $product = $this->createMock(\Magento\Catalog\Model\Product::class);
+        $product->expects($this->never())
+            ->method('getData')
+            ->with($this->equalTo('flexshopper_leasing_enabled'))
+            ->will($this->returnValue('1'));
+
+        $item = $this->createMock(\Magento\Quote\Model\Quote\Item::class);
+        $item->expects($this->never())
+            ->method('getProduct')
+            ->will($this->returnValue($product));
+
+        $items = [$item];
+
+        $quote->expects($this->any())
+            ->method('getItems')
+            ->will($this->returnValue($items));
+
+        $quote->expects($this->any())
+            ->method('__call')
+            ->with($this->equalTo('getGrandTotal'))
+            ->will($this->returnValue($grandTotal));
+
+        $map = [
+            ['payment/flexshopperpayments/auth_key', 'default', null, ''],
+            ['payment/flexshopperpayments/api_key', 'default', null, ''],
+            ['payment/flexshopperpayments/active', 'default', null, '1']
+        ];
+
+        $this->scopeConfig->expects($this->exactly(1)) // This will work because of the || operator in the condition
+            ->method('getValue')
+            ->with($this->logicalOr(
+                $this->equalTo('payment/flexshopperpayments/active'),
+                $this->equalTo('payment/flexshopperpayments/auth_key'),
+                $this->equalTo('payment/flexshopperpayments/api_key')
+            ))
+            ->will($this->returnValueMap($map));
+
+        $this->assertEquals(false, $this->fs->isAvailable($quote));
+    }
+
+    public function testApiCredentialsInIsAvailableExist()
+    {
+        $quote = null;
+        $grandTotal = 1000;
+
+        $quote = $this->createMock(\Magento\Quote\Model\Quote::class);
+
+        $product = $this->createMock(\Magento\Catalog\Model\Product::class);
+        $product->expects($this->once())
+            ->method('getData')
+            ->with($this->equalTo('flexshopper_leasing_enabled'))
+            ->will($this->returnValue('1'));
+
+        $item = $this->createMock(\Magento\Quote\Model\Quote\Item::class);
+        $item->expects($this->once())
+            ->method('getProduct')
+            ->will($this->returnValue($product));
+
+        $items = [$item];
+
+        $quote->expects($this->any())
+            ->method('getItems')
+            ->will($this->returnValue($items));
+
+        $quote->expects($this->any())
+            ->method('__call')
+            ->with($this->equalTo('getGrandTotal'))
+            ->will($this->returnValue($grandTotal));
+
+        $map = [
+            ['payment/flexshopperpayments/auth_key', 'default', null, 'test'],
+            ['payment/flexshopperpayments/api_key', 'default', null, 'test'],
+            ['payment/flexshopperpayments/active', 'store', null, '1']
+        ];
+
+        $this->scopeConfig->expects($this->exactly(3))
+            ->method('getValue')
+            ->with($this->logicalOr(
+                $this->equalTo('payment/flexshopperpayments/active'),
+                $this->equalTo('payment/flexshopperpayments/auth_key'),
+                $this->equalTo('payment/flexshopperpayments/api_key')
+            ))
+            ->will($this->returnValueMap($map));
+
+        $this->assertEquals(true, $this->fs->isAvailable($quote));
     }
 
 }
