@@ -50,3 +50,8 @@ Integration with FlexShopper payment solutions
 
  - Product - FlexShopper Leasing Enabled (flexshopper_leasing_enabled)
 
+## Unit tests.
+
+Please refer to: https://devdocs.magento.com/guides/v2.3/test/unit/unit_test_execution_phpstorm.html
+
+Or from the command line: `vendor/bin/phpunit -c dev/tests/unit/phpunit.xml`
