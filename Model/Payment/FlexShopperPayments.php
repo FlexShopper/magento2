@@ -15,6 +15,10 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
 
     protected $_code = "flexshopperpayments";
     protected $_isOffline = true;
+    /**
+     * @var \Magento\Checkout\Model\Session
+     */
+    private $session;
 
     /**
      * FlexShopperPayments constructor.
@@ -39,19 +43,22 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Payment\Helper\Data $paymentData,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Payment\Model\Method\Logger $logger,
+        \Magento\Checkout\Model\Session $session,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = [],
         DirectoryHelper $directory = null
     ) {
         parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data, $directory);
+        $this->session = $session;
     }
 
 
     public function isAvailable(
         \Magento\Quote\Api\Data\CartInterface $quote = null
     ) {
-        $items = $quote->getItems();
+        $sessionQuote = $this->session->getQuote();
+        $items = $sessionQuote->getAllItems();
 
         if (!$this->apiCredentialsExist()) {
             return false;
@@ -70,7 +77,7 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         if ($this->_scopeConfig->getValue('payment/flexshopperpayments/auth_key') == '' ||
             $this->_scopeConfig->getValue('payment/flexshopperpayments/api_key') == ''
         ) {
-            return false;
+            return true;
         }
 
         return true;
