@@ -77,7 +77,7 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         if ($this->_scopeConfig->getValue('payment/flexshopperpayments/auth_key') == '' ||
             $this->_scopeConfig->getValue('payment/flexshopperpayments/api_key') == ''
         ) {
-            return true;
+            return false;
         }
 
         return true;
