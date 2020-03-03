@@ -8,9 +8,6 @@ define(
             defaults: {
                 template: 'FlexShopper_Payments/payment/flexshopperpayments'
             },
-            getMailingAddress: function () {
-                return window.checkoutConfig.payment.checkmo.mailingAddress;
-            },
         });
     }
 );

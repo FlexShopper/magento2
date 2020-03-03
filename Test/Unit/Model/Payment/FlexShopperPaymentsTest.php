@@ -34,6 +34,8 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
         $eventManagerMock = $this->createMock(\Magento\Framework\Event\ManagerInterface::class);
         $context->expects($this->any())->method('getEventDispatcher')->willReturn($eventManagerMock);
 
+        $session = $this->createMock(\Magento\Checkout\Model\Session::class);
+
         $resource = $this->createMock(\Magento\Framework\Model\ResourceModel\AbstractResource::class);
         $resourceCollection = $this->createMock(\Magento\Framework\Data\Collection\AbstractDb::class);
         $directoryHelper = $this->createMock(\Magento\Directory\Helper\Data::class);
@@ -53,6 +55,7 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
             $paymentData,
             $this->scopeConfig,
             $loggerMock,
+            $session,
             $resource,
             $resourceCollection,
             [],
@@ -84,7 +87,7 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
         $items = [$item];
 
         $quote->expects($this->any())
-            ->method('getItems')
+            ->method('getAllItems')
             ->will($this->returnValue($items));
 
         $quote->expects($this->any())
@@ -135,7 +138,7 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($products[1]));
 
         $quote->expects($this->any())
-            ->method('getItems')
+            ->method('getAllItems')
             ->will($this->returnValue($items));
 
         $quote->expects($this->any())
@@ -155,7 +158,8 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
         $map = [
             ['payment/flexshopperpayments/auth_key', 'default', null, ''],
             ['payment/flexshopperpayments/api_key', 'default', null,  ''],
-            ['payment/flexshopperpayments/active', 'store', null,  '1']
+            ['payment/flexshopperpayments/active', 'store', null,  '1'],
+            ['payment/flexshopperpayments/minimum_order_value', 'default', null, '1000']
         ];
 
         $this->scopeConfig->expects($this->exactly(1))
@@ -163,7 +167,8 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
             ->with($this->logicalOr(
                 $this->equalTo('payment/flexshopperpayments/active'),
                 $this->equalTo('payment/flexshopperpayments/auth_key'),
-                $this->equalTo('payment/flexshopperpayments/api_key')
+                $this->equalTo('payment/flexshopperpayments/api_key'),
+                $this->equalTo('payment/flexshopperpayments/minimum_order_value')
             ))
             ->will($this->returnValueMap($map));
 
@@ -175,7 +180,8 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
         $map = [
             ['payment/flexshopperpayments/auth_key', 'default', null, 'test'],
             ['payment/flexshopperpayments/api_key', 'default', null, 'test'],
-            ['payment/flexshopperpayments/active', 'store', null, '1']
+            ['payment/flexshopperpayments/active', 'store', null, '1'],
+            ['payment/flexshopperpayments/minimum_order_value', 'default', null, '1000']
         ];
 
         $this->scopeConfig->expects($this->exactly(2))
@@ -183,7 +189,8 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
             ->with($this->logicalOr(
                 $this->equalTo('payment/flexshopperpayments/active'),
                 $this->equalTo('payment/flexshopperpayments/auth_key'),
-                $this->equalTo('payment/flexshopperpayments/api_key')
+                $this->equalTo('payment/flexshopperpayments/api_key'),
+                $this->equalTo('payment/flexshopperpayments/minimum_order_value')
             ))
             ->will($this->returnValueMap($map));
 
@@ -211,7 +218,7 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
         $items = [$item];
 
         $quote->expects($this->any())
-            ->method('getItems')
+            ->method('getAllItems')
             ->will($this->returnValue($items));
 
         $quote->expects($this->any())
@@ -222,7 +229,8 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
         $map = [
             ['payment/flexshopperpayments/auth_key', 'default', null, ''],
             ['payment/flexshopperpayments/api_key', 'default', null, ''],
-            ['payment/flexshopperpayments/active', 'default', null, '1']
+            ['payment/flexshopperpayments/active', 'default', null, '1'],
+            ['payment/flexshopperpayments/minimum_order_value', 'default', null, '1000']
         ];
 
         $this->scopeConfig->expects($this->exactly(1)) // This will work because of the || operator in the condition
@@ -230,7 +238,8 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
             ->with($this->logicalOr(
                 $this->equalTo('payment/flexshopperpayments/active'),
                 $this->equalTo('payment/flexshopperpayments/auth_key'),
-                $this->equalTo('payment/flexshopperpayments/api_key')
+                $this->equalTo('payment/flexshopperpayments/api_key'),
+                $this->equalTo('payment/flexshopperpayments/minimum_order_value')
             ))
             ->will($this->returnValueMap($map));
 
@@ -258,7 +267,7 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
         $items = [$item];
 
         $quote->expects($this->any())
-            ->method('getItems')
+            ->method('getAllItems')
             ->will($this->returnValue($items));
 
         $quote->expects($this->any())
@@ -269,19 +278,73 @@ class FlexShopperPaymentsTest extends \PHPUnit\Framework\TestCase
         $map = [
             ['payment/flexshopperpayments/auth_key', 'default', null, 'test'],
             ['payment/flexshopperpayments/api_key', 'default', null, 'test'],
-            ['payment/flexshopperpayments/active', 'store', null, '1']
+            ['payment/flexshopperpayments/active', 'store', null, '1'],
+            ['payment/flexshopperpayments/minimum_order_value', 'default', null, '1000']
         ];
 
-        $this->scopeConfig->expects($this->exactly(3))
+        $this->scopeConfig->expects($this->exactly(4))
             ->method('getValue')
             ->with($this->logicalOr(
                 $this->equalTo('payment/flexshopperpayments/active'),
                 $this->equalTo('payment/flexshopperpayments/auth_key'),
-                $this->equalTo('payment/flexshopperpayments/api_key')
+                $this->equalTo('payment/flexshopperpayments/api_key'),
+                $this->equalTo('payment/flexshopperpayments/minimum_order_value')
             ))
             ->will($this->returnValueMap($map));
 
         $this->assertEquals(true, $this->fs->isAvailable($quote));
+    }
+
+    /**
+     * Is available for a single flex product in cart
+     */
+    public function testGrandTotalLess()
+    {
+        $quote = null;
+        $grandTotal = 500;
+
+        $quote = $this->createMock(\Magento\Quote\Model\Quote::class);
+
+        $product = $this->createMock(\Magento\Catalog\Model\Product::class);
+        $product->expects($this->once())
+            ->method('getData')
+            ->with($this->equalTo('flexshopper_leasing_enabled'))
+            ->will($this->returnValue('1'));
+
+        $item = $this->createMock(\Magento\Quote\Model\Quote\Item::class);
+        $item->expects($this->once())
+            ->method('getProduct')
+            ->will($this->returnValue($product));
+
+        $items = [$item];
+
+        $quote->expects($this->any())
+            ->method('getAllItems')
+            ->will($this->returnValue($items));
+
+        $quote->expects($this->any())
+            ->method('__call')
+            ->with($this->equalTo('getGrandTotal'))
+            ->will($this->returnValue($grandTotal));
+
+        $map = [
+            ['payment/flexshopperpayments/auth_key', 'default', null, 'test'],
+            ['payment/flexshopperpayments/api_key', 'default', null, 'test'],
+            ['payment/flexshopperpayments/active', 'store', null, '1'],
+            ['payment/flexshopperpayments/minimum_order_value', 'default', null, '1000']
+        ];
+
+        $this->scopeConfig->expects($this->atLeast(3))
+            ->method('getValue')
+            ->with($this->logicalOr(
+                $this->equalTo('payment/flexshopperpayments/active'),
+                $this->equalTo('payment/flexshopperpayments/auth_key'),
+                $this->equalTo('payment/flexshopperpayments/api_key'),
+                $this->equalTo('payment/flexshopperpayments/minimum_order_value')
+            ))
+            ->will($this->returnValueMap($map));
+
+        $this->assertEquals(false, $this->fs->isAvailable($quote));
     }
 
 }

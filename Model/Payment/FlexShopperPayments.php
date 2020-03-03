@@ -58,16 +58,27 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Quote\Api\Data\CartInterface $quote = null
     ) {
         $sessionQuote = $this->session->getQuote();
+        if(!$sessionQuote) {
+            $sessionQuote = $quote;
+        }
         $items = $sessionQuote->getAllItems();
 
         if (!$this->apiCredentialsExist()) {
             return false;
         }
 
+        /** @var \Magento\Quote\Model\Quote\Item $item */
         foreach($items as $item) {
             if ($item->getProduct()->getData('flexshopper_leasing_enabled') == false) { // this = to '0' or '1', or null
                 return false;
             }
+            if ($item->getQtyBackordered() > 0) {
+                return false;
+            }
+        }
+
+        if ($quote->getGrandTotal() < $this->getMinimumOrdervalue()) {
+            return false;
         }
 
         return parent::isAvailable($quote);
@@ -81,6 +92,11 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         }
 
         return true;
+    }
+
+    protected function getMinimumOrdervalue()
+    {
+        return $this->_scopeConfig->getValue('payment/flexshopperpayments/minimum_order_value');
     }
 }
 
