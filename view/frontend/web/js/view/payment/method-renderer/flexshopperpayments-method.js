@@ -13,6 +13,7 @@ define(
                 code: 'flexshopper',
                 active: true,
                 grandTotalAmount: null,
+                quoteId: null,
                 isReviewRequired: false,
             },
 
@@ -28,13 +29,43 @@ define(
 
                 var script = document.createElement('script');
                 script.type = 'text/javascript';
-                script.src = 'https://pp3.flexshopper.com/sdk/js?authKey='+adapter.getAuthKey();
+                script.src = adapter.getUrl()+'?authKey='+encodeURIComponent(adapter.getAuthKey());
                 script.onload = function () {
-                    alert('LOADED TODO');
                     FlexSDK.Button({
-                        createOrder: function() {},
-                        onSign: function() {}
-                    }).render('#elementSelector');
+                        createOrder: function(data, actions) {
+                            console.log(quote.items)
+                            return actions.transaction.create({
+                                cost: self.grandTotalAmount,
+                                transactionId: "ABC-129384",
+                                items: [
+                                    {
+                                        description: "Macbook Pro 13",
+                                        sku: "ABC123",
+                                        cost: 120.34,
+                                        brand: "Apple",
+                                        condition: "new",
+                                        quantity: 1,
+                                        images: [ // optional
+                                            "https://images.dog.ceo/breeds/husky/n02110185_11635.jpg"
+                                        ],
+                                        shipping: {
+                                            cost: 10.33,
+                                            date: new Date().toString(),
+                                            method: "UPS"
+                                        }
+                                    }
+                                ]
+                            });
+                        },
+                        onSign: function(data) {
+                            return fetch('/flexshopper/validate-order', {
+                                method: 'POST',
+                                body: JSON.stringify(data)
+                            }).then(function() {
+                                self.placeOrder();
+                            });
+                        }
+                    }).render('#flexshopper-button');
                 };
                 script.onerror = function(e) {
                     alert('Failed to load FlexShopper');
@@ -85,6 +116,10 @@ define(
 
                 return active;
             },
+
+            clickEvent: function() {
+                alert('click');
+            }
         });
     }
 );
