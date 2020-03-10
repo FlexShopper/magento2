@@ -20,7 +20,7 @@ define([
 
         getUrl: function () {
             let url = 'https://pp3.flexshopper.com/sdk/js'; // production
-            if (window.checkoutConfig.payment[this.code].mode === 'test') {
+            if (window.checkoutConfig.payment[this.code].mode === 'sandbox') {
                 url = 'https://pp3.sandbox.flexshopper.com/sdk/js';
             }
             return url;

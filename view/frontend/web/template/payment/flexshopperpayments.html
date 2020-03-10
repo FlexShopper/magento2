@@ -28,11 +28,13 @@
         </div>
         <div class="actions-toolbar">
             <div class="primary">
+                <div id="flexshopper-button"></div>
                 <button class="action primary checkout"
-                        id="flexshopper-button"
+                        style="display: none;"
+                        id="flexshopper-button-real"
                         type="submit"
                         data-bind="
-                        click: clickEvent,
+                        click: placeOrder,
                         attr: {title: $t('Place Order')},
                         css: {disabled: !isPlaceOrderActionAllowed()},
                         enable: (getCode() == isChecked())

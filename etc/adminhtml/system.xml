@@ -12,7 +12,7 @@
 					<label>Title</label>
 				</field>
 				<field id="sandbox_flag" translate="label" type="select" sortOrder="23" showInDefault="1" showInWebsite="1" showInStore="0">
-					<label>Test Mode</label>
+					<label>Sandbox Mode</label>
 					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
 				</field>
 				<field id="auth_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="26" translate="label" type="text">

@@ -33,28 +33,36 @@ define(
                 script.onload = function () {
                     FlexSDK.Button({
                         createOrder: function(data, actions) {
-                            console.log(quote.items)
+                            console.log(quote.shippingMethod());
+                            const shippingMethod = quote.shippingMethod();
+                            const items = quote.getItems();
+                            let flexItems = [];
+                            let item;
+                            let index;
+                            for (index = 0; index < items.length; ++index) {
+                                console.log(items[index]);
+                                item = items[index];
+                                flexItems.push({
+                                    description: item.name,
+                                    sku: item.sku,
+                                    cost: parseFloat(item.price_incl_tax),
+                                    brand: "n/a",
+                                    condition: "new",
+                                    quantity: item.qty,
+                                    images: [ // optional
+                                        item.thumbnail
+                                    ],
+                                    shipping: {
+                                        cost: shippingMethod.amount,
+                                        date: new Date().toString(),
+                                        method: shippingMethod.carrier_title
+                                    }
+                                });
+                            }
                             return actions.transaction.create({
                                 cost: self.grandTotalAmount,
-                                transactionId: "ABC-129384",
-                                items: [
-                                    {
-                                        description: "Macbook Pro 13",
-                                        sku: "ABC123",
-                                        cost: 120.34,
-                                        brand: "Apple",
-                                        condition: "new",
-                                        quantity: 1,
-                                        images: [ // optional
-                                            "https://images.dog.ceo/breeds/husky/n02110185_11635.jpg"
-                                        ],
-                                        shipping: {
-                                            cost: 10.33,
-                                            date: new Date().toString(),
-                                            method: "UPS"
-                                        }
-                                    }
-                                ]
+                                transactionId: quote.getQuoteId(),
+                                items: flexItems,
                             });
                         },
                         onSign: function(data) {

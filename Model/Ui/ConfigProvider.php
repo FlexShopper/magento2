@@ -8,6 +8,7 @@ class ConfigProvider implements ConfigProviderInterface
 {
     const CODE = 'flexshopper';
     const CONFIG_AUTH_KEY = 'payment/flexshopperpayments/auth_key';
+    const CONFIG_SANDBOX_FLAG = 'payment/flexshopperpayments/sandbox_flag';
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
@@ -27,7 +28,7 @@ class ConfigProvider implements ConfigProviderInterface
             'payment' => [
                 self::CODE => [
                     'authKey' => $this->getAuthKey(),
-                    'mode' => 'test' // TODO from config
+                    'mode' => $this->getMode()
                 ]
             ]
         ];
@@ -36,5 +37,14 @@ class ConfigProvider implements ConfigProviderInterface
     private function getAuthKey()
     {
         return $this->scopeConfig->getValue(self::CONFIG_AUTH_KEY);
+    }
+
+    private function getMode()
+    {
+        if ($this->scopeConfig->getValue(self::CONFIG_SANDBOX_FLAG)) {
+            return 'sandbox';
+        } else {
+            return 'production';
+        }
     }
 }
