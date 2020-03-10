@@ -11,15 +11,15 @@ class Index extends \Magento\Framework\App\Action\Action
     /**
      * @var \Magento\Framework\Controller\Result\JsonFactory
      */
-    private \Magento\Framework\Controller\Result\JsonFactory $jsonFactory;
+    private $jsonFactory;
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    private \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig;
+    private $scopeConfig;
     /**
      * @var \Magento\Framework\Serialize\Serializer\Json
      */
-    private \Magento\Framework\Serialize\Serializer\Json $json;
+    private $json;
 
     public function __construct(
         Context $context,
