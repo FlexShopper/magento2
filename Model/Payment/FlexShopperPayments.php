@@ -3,6 +3,7 @@
 
 namespace FlexShopper\Payments\Model\Payment;
 
+use FlexShopper\Payments\Helper\Data;
 use Magento\Directory\Helper\Data as DirectoryHelper;
 
 /**
@@ -15,10 +16,16 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
 
     protected $_code = "flexshopperpayments";
     protected $_isOffline = true;
+
     /**
      * @var \Magento\Checkout\Model\Session
      */
     private $session;
+
+    /**
+     * @var Data
+     */
+    private $helper;
 
     /**
      * FlexShopperPayments constructor.
@@ -46,11 +53,13 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Checkout\Model\Session $session,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        Data $helper,
         array $data = [],
         DirectoryHelper $directory = null
     ) {
         parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data, $directory);
         $this->session = $session;
+        $this->helper = $helper;
     }
 
 
@@ -85,8 +94,8 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
     }
 
     public function apiCredentialsExist() {
-        if ($this->_scopeConfig->getValue('payment/flexshopperpayments/auth_key') == '' ||
-            $this->_scopeConfig->getValue('payment/flexshopperpayments/api_key') == ''
+        if ($this->helper->getAuthkey() == '' ||
+            $this->helper->getApiKey() == ''
         ) {
             return false;
         }
@@ -96,7 +105,7 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
 
     protected function getMinimumOrdervalue()
     {
-        return $this->_scopeConfig->getValue('payment/flexshopperpayments/minimum_order_value');
+        return $this->helper->getMinimumOrderValue();
     }
 }
 

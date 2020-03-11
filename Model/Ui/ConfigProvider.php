@@ -2,23 +2,28 @@
 
 namespace FlexShopper\Payments\Model\Ui;
 
+use FlexShopper\Payments\Helper\Data;
 use \Magento\Checkout\Model\ConfigProviderInterface;
 
 class ConfigProvider implements ConfigProviderInterface
 {
     const CODE = 'flexshopper';
-    const CONFIG_AUTH_KEY = 'payment/flexshopperpayments/auth_key';
-    const CONFIG_SANDBOX_FLAG = 'payment/flexshopperpayments/sandbox_flag';
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     private $scopeConfig;
+    /**
+     * @var Data
+     */
+    private Data $helper;
 
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        Data $helper
     ) {
         $this->scopeConfig = $scopeConfig;
+        $this->helper = $helper;
     }
 
 
@@ -27,24 +32,10 @@ class ConfigProvider implements ConfigProviderInterface
         return [
             'payment' => [
                 self::CODE => [
-                    'authKey' => $this->getAuthKey(),
-                    'mode' => $this->getMode()
+                    'authKey' => $this->helper->getAuthKey(),
+                    'mode' => $this->helper->getMode()
                 ]
             ]
         ];
-    }
-
-    private function getAuthKey()
-    {
-        return $this->scopeConfig->getValue(self::CONFIG_AUTH_KEY);
-    }
-
-    private function getMode()
-    {
-        if ($this->scopeConfig->getValue(self::CONFIG_SANDBOX_FLAG)) {
-            return 'sandbox';
-        } else {
-            return 'production';
-        }
     }
 }

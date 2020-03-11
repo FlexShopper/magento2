@@ -55,7 +55,7 @@ define(
                                     shipping: {
                                         cost: shippingMethod.amount,
                                         date: new Date().toString(),
-                                        method: shippingMethod.carrier_title
+                                        method: 'ground'
                                     }
                                 });
                             }
