@@ -16,7 +16,7 @@ class ConfigProvider implements ConfigProviderInterface
     /**
      * @var Data
      */
-    private Data $helper;
+    private $helper;
 
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
