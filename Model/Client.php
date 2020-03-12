@@ -44,12 +44,13 @@ class Client
         try {
             $flexShopperClient = new GuzzleClient([
                 'base_uri' => $this->helper->getBaseUri(),
+                'timeout'  => 2.0,
                 'headers' => [
                     'Authorization' => $this->helper->getApiKey()
                 ]
             ]);
-            $response = $flexShopperClient->get('/v3'.$uri)->getBody();
-            return $response;
+            $response = $flexShopperClient->request('GET', '/v3/' . $uri);
+            return $response->getBody();
         } catch (\Exception $e) {
             return false;
         }
@@ -57,7 +58,13 @@ class Client
 
     public function getMinimumAmount()
     {
-        return $this->call('/settings/lease');
+        $response = $this->call('settings/lease');
+        if (!$response) {
+            return $response;
+        }
+
+        $data = $this->json->unserialize($response);
+        return $data['data']['minimumOrderValue'];
     }
 
 }

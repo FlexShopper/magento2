@@ -4,6 +4,7 @@
 namespace FlexShopper\Payments\Model\Payment;
 
 use FlexShopper\Payments\Helper\Data;
+use FlexShopper\Payments\Model\Client;
 use Magento\Directory\Helper\Data as DirectoryHelper;
 
 /**
@@ -26,6 +27,10 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
      * @var Data
      */
     private $helper;
+    /**
+     * @var Client
+     */
+    private Client $client;
 
     /**
      * FlexShopperPayments constructor.
@@ -51,15 +56,17 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Payment\Model\Method\Logger $logger,
         \Magento\Checkout\Model\Session $session,
+        Data $helper,
+        Client $client,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        Data $helper,
         array $data = [],
         DirectoryHelper $directory = null
     ) {
         parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data, $directory);
         $this->session = $session;
         $this->helper = $helper;
+        $this->client = $client;
     }
 
 
@@ -105,7 +112,8 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
 
     protected function getMinimumOrdervalue()
     {
-        return $this->helper->getMinimumOrderValue();
+        $apiMinValue = $this->client->getMinimumAmount();
+        return $apiMinValue? $apiMinValue : $this->helper->getMinimumOrderValue();
     }
 }
 
