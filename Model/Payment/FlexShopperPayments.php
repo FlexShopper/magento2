@@ -30,7 +30,7 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * @var Client
      */
-    private Client $client;
+    private $client;
 
     /**
      * FlexShopperPayments constructor.
