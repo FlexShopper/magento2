@@ -3,7 +3,11 @@
 namespace FlexShopper\Payments\Controller\Validate;
 
 use GuzzleHttp\Client;
+use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Quote\Model\Quote;
 use Zend\Diactoros\Response\JsonResponse;
 
 class Index extends \Magento\Framework\App\Action\Action
@@ -20,44 +24,66 @@ class Index extends \Magento\Framework\App\Action\Action
      * @var \Magento\Framework\Serialize\Serializer\Json
      */
     private $json;
+    /**
+     * @var Session
+     */
+    private $checkoutSession;
+    /**
+     * @var \Psr\Log\LoggerInterface
+     */
+    private $logger;
+    /**
+     * @var \FlexShopper\Payments\Model\Client
+     */
+    private $client;
 
     public function __construct(
         Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $jsonFactory,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Framework\Serialize\Serializer\Json $json
+        \Magento\Framework\Serialize\Serializer\Json $json,
+        Session $checkoutSession,
+        \FlexShopper\Payments\Model\Client $client,
+        \Psr\Log\LoggerInterface $logger
     ) {
         parent::__construct($context);
         $this->jsonFactory = $jsonFactory;
         $this->scopeConfig = $scopeConfig;
         $this->json = $json;
+        $this->checkoutSession = $checkoutSession;
+        $this->logger = $logger;
+        $this->client = $client;
     }
 
     public function execute()
     {
         try {
 
-            $flexShopperClient = new Client([
-                'base_uri' => 'https://apis.sandbox.flexshopper.com/v3',
-                'headers' => [
-                    'Authorization' => $this->getApiKey()
-                ]
-            ]);
-
             $body = $this->json->unserialize($this->getRequest()->getContent());
 
             $transactionId = $body['transactionId'];
             $transaction = $this->json->unserialize(
-                $flexShopperClient->get("/transactions/${transactionId}")->getBody()
+                $this->client->getTransaction($transactionId)
             );
+
+            $this->logger->debug('Flexshopper transaction id:' . $transactionId);
+
             $orderStatus = $this->checkOrder($transaction);
 
+            $quote = $this->checkoutSession->getQuote();
+            $quote->setFlexshopperId($transactionId);
+            $quote->save();
+
             if (!$orderStatus) {
-                return new JsonResponse(['valid' => false, 'errors' => $orderStatus->errors], 400);
+                $this->logger->debug('Invalid order');
+                return $this->jsonFactory->create()
+                    ->setData([
+                        'valid' => false,
+                        'errors' => 'Invalid order'
+                    ]);
             }
 
-            $flexShopperClient->post("/transactions/${transactionId}/finalize");
-
+            $this->client->finalizeTransaction($transactionId);
 
             return $this->jsonFactory->create()
                 ->setData([
@@ -75,11 +101,15 @@ class Index extends \Magento\Framework\App\Action\Action
 
     private function checkOrder($transaction)
     {
-        return true; // TODO check if quote_id exists.
-    }
+        $this->logger->debug($this->json->serialize($transaction));
+        try {
+            $this->checkoutSession->getQuote();
+        } catch (NoSuchEntityException $e) {
+            return false;
+        } catch (LocalizedException $e) {
+            return false;
+        }
 
-    private function getApiKey() {
-        return $this->scopeConfig->getValue('payment/flexshopperpayments/api_key');
+        return true; // If the user's session have a quote, this is always valid.
     }
-
 }

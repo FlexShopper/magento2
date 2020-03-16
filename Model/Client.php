@@ -49,7 +49,7 @@ class Client
                     'Authorization' => $this->helper->getApiKey()
                 ]
             ]);
-            $response = $flexShopperClient->request('GET', '/v3/' . $uri);
+            $response = $flexShopperClient->request($method, '/v3/' . $uri);
             return $response->getBody();
         } catch (\Exception $e) {
             return false;
@@ -65,6 +65,14 @@ class Client
 
         $data = $this->json->unserialize($response);
         return $data['data']['minimumOrderValue'];
+    }
+
+    public function getTransaction($flexshopperId) {
+        return $this->call("/transactions/${$flexshopperId}");
+    }
+
+    public function finalizeTransaction($flexshopperId) {
+        return $this->call("/transactions/${$flexshopperId}/finalize", 'POST');
     }
 
 }

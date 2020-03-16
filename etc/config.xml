@@ -7,6 +7,7 @@
 				<model>FlexShopper\Payments\Model\Payment\FlexShopperPayments</model>
 				<order_status>pending</order_status>
 				<title>FlexShopper Payments</title>
+				<brand>manufacturer</brand>
 				<allowspecific>0</allowspecific>
 				<group>offline</group>
 				<sandbox_flag>0</sandbox_flag>

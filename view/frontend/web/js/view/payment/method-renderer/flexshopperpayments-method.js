@@ -33,20 +33,25 @@ define(
                 script.onload = function () {
                     FlexSDK.Button({
                         createOrder: function(data, actions) {
-                            console.log(quote.shippingMethod());
                             const shippingMethod = quote.shippingMethod();
                             const items = quote.getItems();
+                            const brandAttr = adapter.getBrandAttr();
                             let flexItems = [];
                             let item;
                             let index;
+                            let brand;
                             for (index = 0; index < items.length; ++index) {
-                                console.log(items[index]);
                                 item = items[index];
+                                if (item[brandAttr]) {
+                                    brand = item[brandAttr];
+                                } else {
+                                    brand = 'n/a';
+                                }
                                 flexItems.push({
                                     description: item.name,
                                     sku: item.sku,
                                     cost: parseFloat(item.price_incl_tax),
-                                    brand: "n/a",
+                                    brand: brand,
                                     condition: "new",
                                     quantity: item.qty,
                                     images: [ // optional
@@ -66,7 +71,7 @@ define(
                             });
                         },
                         onSign: function(data) {
-                            return fetch('/flexshopper/validate-order', {
+                            return fetch(adapter.getValidateUrl(), {
                                 method: 'POST',
                                 body: JSON.stringify(data)
                             }).then(function() {
@@ -123,10 +128,6 @@ define(
                 this.active(active);
 
                 return active;
-            },
-
-            clickEvent: function() {
-                alert('click');
             }
         });
     }

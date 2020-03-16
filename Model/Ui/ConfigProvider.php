@@ -17,13 +17,19 @@ class ConfigProvider implements ConfigProviderInterface
      * @var Data
      */
     private $helper;
+    /**
+     * @var \Magento\Framework\UrlInterface
+     */
+    private $urlInterface;
 
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        Data $helper
+        Data $helper,
+        \Magento\Framework\UrlInterface $urlInterface
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->helper = $helper;
+        $this->urlInterface = $urlInterface;
     }
 
 
@@ -33,7 +39,9 @@ class ConfigProvider implements ConfigProviderInterface
             'payment' => [
                 self::CODE => [
                     'authKey' => $this->helper->getAuthKey(),
-                    'mode' => $this->helper->getMode()
+                    'mode' => $this->helper->getMode(),
+                    'validateUrl' => $this->urlInterface->getUrl('flexshopper/validate/index'),
+                    'brandAttr' => $this->helper->getBrandAttribute()
                 ]
             ]
         ];

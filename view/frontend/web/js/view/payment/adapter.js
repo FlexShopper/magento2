@@ -18,6 +18,14 @@ define([
             return window.checkoutConfig.payment[this.code].authKey;
         },
 
+        getValidateUrl: function () {
+            return window.checkoutConfig.payment[this.code].validateUrl;
+        },
+
+        getBrandAttr: function () {
+            return window.checkoutConfig.payment[this.code].brandAttr;
+        },
+
         getUrl: function () {
             let url = 'https://pp3.flexshopper.com/sdk/js'; // production
             if (window.checkoutConfig.payment[this.code].mode === 'sandbox') {

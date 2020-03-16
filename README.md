@@ -49,6 +49,20 @@ Integration with FlexShopper payment solutions
 ## Attributes
 
  - Product - FlexShopper Leasing Enabled (flexshopper_leasing_enabled)
+ 
+## Brand
+
+Brand is a required parameter for FlexShopper. This extension defaults to "manufacturer", but you can use any attribute
+from the configuration. Just make sure it's available for the quote item by adding this to your custom extension:
+/etc/catalog_attributes.xml:
+```xml
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Catalog:etc/catalog_attributes.xsd">
+    <group name="quote_item">
+        <attribute name="your_brand_attribute"/>
+    </group>
+</config>
+```
 
 ## Unit tests.
 
