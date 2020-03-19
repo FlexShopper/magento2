@@ -7,7 +7,7 @@ namespace FlexShopper\Payments\Observer;
 use FlexShopper\Payments\Model\Client;
 use Magento\Framework\Event\Observer;
 
-class AfterShipment implements \Magento\Framework\Event\ObserverInterface
+class Cancel implements \Magento\Framework\Event\ObserverInterface
 {
 
     /**
@@ -27,11 +27,10 @@ class AfterShipment implements \Magento\Framework\Event\ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        $shipment = $observer->getEvent()->getShipment();
-        $order = $shipment->getOrder();
+        $order = $observer->getEvent()->getOrder();
         $flexshopperId = $order->getFlexshopperId();
         if ($flexshopperId) {
-            $this->client->confirmShipment($flexshopperId);
+            $this->client->cancelOrder($flexshopperId);
         }
     }
 }

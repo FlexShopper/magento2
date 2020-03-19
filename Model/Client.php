@@ -79,4 +79,8 @@ class Client
         return $this->call("/transactions/${$flexshopperId}/confirm-shipment");
     }
 
+    public function cancelOrder($flexshopperId) {
+        return $this->call("/transactions/${$flexshopperId}/confirm-shipment", 'POST');
+    }
+
 }
