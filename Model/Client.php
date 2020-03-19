@@ -80,7 +80,7 @@ class Client
     }
 
     public function cancelOrder($flexshopperId) {
-        return $this->call("/transactions/${$flexshopperId}/confirm-shipment", 'POST');
+        return $this->call("/transactions/${$flexshopperId}/cancel", 'POST');
     }
 
 }
