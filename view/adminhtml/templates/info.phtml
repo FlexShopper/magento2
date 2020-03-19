@@ -1,0 +1,8 @@
+<?php
+/** @var \FlexShopper\Payments\Block\Adminhtml\Info $block */
+$flexShopperId = $block->getFlexshopperId();
+?>
+
+<?php if ($flexShopperId): ?>
+Flexshopper ID: <?= $flexShopperId ?>
+<?php endif ?>
