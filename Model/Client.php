@@ -5,6 +5,7 @@ namespace FlexShopper\Payments\Model;
 
 use FlexShopper\Payments\Helper\Data;
 use GuzzleHttp\Client as GuzzleClient;
+use Zend\Json\Json;
 
 class Client
 {
@@ -75,8 +76,24 @@ class Client
         return $this->call("/transactions/${$flexshopperId}/finalize", 'POST');
     }
 
-    public function confirmShipment($flexshopperId) {
-        return $this->call("/transactions/${$flexshopperId}/confirm-shipment");
+    public function confirmShipment($flexshopperId, $carrier = 'ground', $items = false) {
+        $jsonItems = [];
+        $jsonBody = '';
+        if (is_array($items)) {
+            /** @var \Magento\Sales\Model\Order\Shipment\Item $item */
+            foreach ($items as $item) {
+                $jsonItems[] =
+                    [
+                        'sku' => $item->getSku(),
+                        'carrier' => $carrier,
+                        'shipDate' =>  date('Y-m-d'),
+                    ];
+
+            }
+
+            $jsonBody = $this->json->serialize(['items' => $jsonItems]);
+        }
+        return $this->call("/transactions/${$flexshopperId}/confirm-shipment", 'POST', $jsonBody);
     }
 
     public function cancelOrder($flexshopperId) {

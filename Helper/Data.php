@@ -50,4 +50,29 @@ class Data extends AbstractHelper
     {
         return $this->scopeConfig->getValue(self::CONFIG_BRAND_ATTRIBUTE);
     }
+
+    /**
+     * Get carrier code based on method name, defaults to 'ground'
+     * Note to extension developers: use a `before` plugin to return with your carrier mapping
+     *
+     * Possible mappings are:
+     *  - freight
+     *  - ground
+     *  - store
+     *  - 2-day-air
+     *  - overnight
+     * @param $method
+     * @return string
+     */
+    public function getCarrierCode($method) {
+        /*
+         * Possible mappings are:
+         */
+        switch ($method) {
+            case 'free':
+                return 'ground';
+            default:
+                return 'ground';
+        }
+    }
 }
