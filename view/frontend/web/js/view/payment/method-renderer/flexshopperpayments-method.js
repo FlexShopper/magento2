@@ -70,13 +70,19 @@ define(
                                 items: flexItems,
                             });
                         },
-                        onSign: function(data) {
+                        onSign: function (data) {
                             return fetch(adapter.getValidateUrl(), {
                                 method: 'POST',
                                 body: JSON.stringify(data)
-                            }).then(function() {
-                                self.placeOrder();
-                            });
+                            })
+                                .then((response) => response.json())
+                                .then((data) => {
+                                    if (data['valid']) {
+                                        self.placeOrder();
+                                    } else {
+                                        console.log(data);
+                                    }
+                                });
                         }
                     }).render('#flexshopper-button');
                 };
