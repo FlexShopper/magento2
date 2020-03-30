@@ -5,12 +5,13 @@ namespace FlexShopper\Payments\Controller\Validate;
 use GuzzleHttp\Client;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\Quote;
 use Zend\Diactoros\Response\JsonResponse;
 
-class Index extends \Magento\Framework\App\Action\Action
+class Index extends \Magento\Framework\App\Action\Action implements \Magento\Framework\App\CsrfAwareActionInterface
 {
     /**
      * @var \Magento\Framework\Controller\Result\JsonFactory
@@ -61,12 +62,12 @@ class Index extends \Magento\Framework\App\Action\Action
 
             $body = $this->json->unserialize($this->getRequest()->getContent());
 
-            $transactionId = $body['transactionId'];
+            $transactionId = $body['leaseNumber'];
             $transaction = $this->json->unserialize(
                 $this->client->getTransaction($transactionId)
             );
 
-            $this->logger->debug('Flexshopper transaction id:' . $transactionId);
+            $this->logger->debug('Flexshopper lease number:' . $transactionId);
 
             $orderStatus = $this->checkOrder($transaction);
 
@@ -111,5 +112,25 @@ class Index extends \Magento\Framework\App\Action\Action
         }
 
         return true; // If the user's session have a quote, this is always valid.
+    }
+
+    /**
+     * @param RequestInterface $request
+     *
+     * @return bool|null
+     */
+    public function validateForCsrf(RequestInterface $request): ?bool
+    {
+        return true;
+    }
+
+    /**
+     * @param RequestInterface $request
+     *
+     * @return InvalidRequestException|null
+     */
+    public function createCsrfValidationException(RequestInterface $request): ?\Magento\Framework\App\Request\InvalidRequestException
+    {
+        return null;
     }
 }

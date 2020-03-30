@@ -69,11 +69,11 @@ class Client
     }
 
     public function getTransaction($flexshopperId) {
-        return $this->call("/transactions/${$flexshopperId}");
+        return $this->call("/transactions/${flexshopperId}");
     }
 
     public function finalizeTransaction($flexshopperId) {
-        return $this->call("/transactions/${$flexshopperId}/finalize", 'POST');
+        return $this->call("/transactions/${flexshopperId}/finalize", 'POST');
     }
 
     public function confirmShipment($flexshopperId, $carrier = 'ground', $items = false) {
@@ -93,11 +93,11 @@ class Client
 
             $jsonBody = $this->json->serialize(['items' => $jsonItems]);
         }
-        return $this->call("/transactions/${$flexshopperId}/confirm-shipment", 'POST', $jsonBody);
+        return $this->call("/transactions/${flexshopperId}/confirm-shipment", 'POST', $jsonBody);
     }
 
     public function cancelOrder($flexshopperId) {
-        return $this->call("/transactions/${$flexshopperId}/cancel", 'POST');
+        return $this->call("/transactions/${flexshopperId}/cancel", 'POST');
     }
 
 }
