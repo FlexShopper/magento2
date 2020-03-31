@@ -81,6 +81,7 @@ define(
                                         self.placeOrder();
                                     } else {
                                         console.log(data);
+                                        alert(data.error);
                                     }
                                 });
                         }
