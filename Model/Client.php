@@ -50,7 +50,7 @@ class Client
                     'Authorization' => $this->helper->getApiKey()
                 ]
             ]);
-            $response = $flexShopperClient->request($method, '/v3/' . $uri);
+            $response = $flexShopperClient->request($method, '/v3' . $uri);
             return $response->getBody();
         } catch (\Exception $e) {
             return false;

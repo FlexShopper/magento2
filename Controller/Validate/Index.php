@@ -62,17 +62,19 @@ class Index extends \Magento\Framework\App\Action\Action implements \Magento\Fra
 
             $body = $this->json->unserialize($this->getRequest()->getContent());
 
-            $transactionId = $body['leaseNumber'];
+            $leaseNumber = $body['leaseNumber'];
+            $transactionId = $body['transactionId'];
             $transaction = $this->json->unserialize(
                 $this->client->getTransaction($transactionId)
             );
 
-            $this->logger->debug('Flexshopper lease number:' . $transactionId);
+            $this->logger->debug('Flexshopper lease number:' . $leaseNumber);
+            $this->logger->debug('Flexshopper transaction id:' . $transactionId);
 
             $orderStatus = $this->checkOrder($transaction);
 
             $quote = $this->checkoutSession->getQuote();
-            $quote->setFlexshopperId($transactionId);
+            $quote->setFlexshopperId($leaseNumber);
             $quote->save();
 
             if (!$orderStatus) {
@@ -111,7 +113,11 @@ class Index extends \Magento\Framework\App\Action\Action implements \Magento\Fra
             return false;
         }
 
-        return true; // If the user's session have a quote, this is always valid.
+        if ($transaction['data']['lease']['status'] == 'signed') {
+            return true;
+        }
+
+        return false; // If the user's session have a quote, this is always valid.
     }
 
     /**
