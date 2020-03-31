@@ -66,7 +66,7 @@ define(
                             }
                             return actions.transaction.create({
                                 cost: self.grandTotalAmount,
-                                transactionId: quote.getQuoteId(),
+                                transactionId: quote.getQuoteId() + "-" + Math.floor(Date.now() / 1000),
                                 items: flexItems,
                             });
                         },
