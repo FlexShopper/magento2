@@ -86,6 +86,7 @@ class Client
                     [
                         'sku' => $item->getSku(),
                         'carrier' => $carrier,
+                        'quantity' => $item->getQty(),
                         'shipDate' =>  date('Y-m-d'),
                     ];
 
@@ -94,6 +95,26 @@ class Client
             $jsonBody = $this->json->serialize(['items' => $jsonItems]);
         }
         return $this->call("/transactions/${flexshopperId}/confirm-shipment", 'POST', $jsonBody);
+    }
+
+    public function rma($flexshopperId, $items = false) {
+        $jsonItems = [];
+        $jsonBody = '';
+        if (is_array($items)) {
+            /** @var \Magento\Sales\Model\Order\Shipment\Item $item */
+            foreach ($items as $item) {
+                /** @var \Magento\Rma\Api\Data\ItemInterface $item */
+                $jsonItems[] =
+                    [
+                        'sku' => $item->getSku(),
+                        'quantity' => $item->getQty(),
+                    ];
+
+            }
+
+            $jsonBody = $this->json->serialize(['items' => $jsonItems]);
+        }
+        return $this->call("/transactions/${flexshopperId}/return-items", 'POST', $jsonBody);
     }
 
     public function cancelOrder($flexshopperId) {
