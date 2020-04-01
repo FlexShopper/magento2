@@ -45,6 +45,7 @@ Integration with FlexShopper payment solutions
  - Payment Method
 	- FlexShopperPayments
 
+No invoice will be created for Flex Shopper orders and in case the merchant needs a payment document in Magento, they have to manually do it upon payment from FlexShopper, as there is no automated way of getting notified.
 
 ## Attributes
 
