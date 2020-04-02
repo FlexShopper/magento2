@@ -3,7 +3,7 @@
     <event name="sales_order_shipment_save_after">
         <observer name="flexshopper_after_payments" instance="FlexShopper\Payments\Observer\AfterShipment" />
     </event>
-    <event name="order_cancel_after">
+    <!--event name="order_cancel_after">
         <observer name="flexshopper_order_cancel" instance="FlexShopper\Payments\Observer\Cancel" />
-    </event>
+    </event-->
 </config>

@@ -7,6 +7,11 @@ namespace FlexShopper\Payments\Observer;
 use FlexShopper\Payments\Model\Client;
 use Magento\Framework\Event\Observer;
 
+/**
+ * Class Cancel
+ * @deprecated See plugin around \Magento\Sales\Model\Order::cancel
+ * @package FlexShopper\Payments\Observer
+ */
 class Cancel implements \Magento\Framework\Event\ObserverInterface
 {
 
