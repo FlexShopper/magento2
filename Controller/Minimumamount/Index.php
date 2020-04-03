@@ -35,6 +35,7 @@ class Index extends \Magento\Framework\App\Action\Action
 
     public function execute()
     {
+        $this->client->setTimeout('2.0');
         $minimumAmount = $this->client->getMinimumAmount();
         $result = $this->jsonFactory->create();
 

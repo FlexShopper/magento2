@@ -29,6 +29,8 @@ class Client
      */
     private $helper;
 
+    private $timeout = "10.0";
+
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Controller\Result\JsonFactory $jsonFactory,
@@ -45,7 +47,7 @@ class Client
         try {
             $flexShopperClient = new GuzzleClient([
                 'base_uri' => $this->helper->getBaseUri(),
-                'timeout'  => 2.0,
+                'timeout'  => $this->timeout,
                 'headers' => [
                     'Authorization' => $this->helper->getApiKey()
                 ]
@@ -55,6 +57,10 @@ class Client
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+    public function setTimeout($timeout) {
+        $this->timeout = $timeout;
     }
 
     public function getMinimumAmount()
