@@ -25,7 +25,8 @@ class OrderPlugin
         if ($flexshopperId) {
             $result = $this->client->cancelOrder($flexshopperId);
             if ($result === false) {
-                throw new InvalidFlexshopperResponse(__("Invalid response from FlexShopper, order can't be canceled."));
+                $errorMessage = $this->client->errorMessage;
+                throw new InvalidFlexshopperResponse(__("Invalid response from FlexShopper, order can't be canceled: $errorMessage"));
             }
         }
     }

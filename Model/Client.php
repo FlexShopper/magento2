@@ -31,6 +31,8 @@ class Client
 
     private $timeout = "10.0";
 
+    public $errorMessage = "";
+
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Controller\Result\JsonFactory $jsonFactory,
@@ -55,6 +57,7 @@ class Client
             $response = $flexShopperClient->request($method, '/v3' . $uri);
             return $response->getBody();
         } catch (\Exception $e) {
+            $this->errorMessage = $e->getMessage();
             return false;
         }
     }
