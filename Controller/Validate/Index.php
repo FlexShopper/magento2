@@ -2,6 +2,7 @@
 
 namespace FlexShopper\Payments\Controller\Validate;
 
+use FlexShopper\Payments\Exception\InvalidFlexshopperResponse;
 use GuzzleHttp\Client;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Context;
@@ -86,7 +87,13 @@ class Index extends \Magento\Framework\App\Action\Action implements \Magento\Fra
                     ]);
             }
 
-            $this->client->finalizeTransaction($transactionId);
+            $finalizeResult = $this->client->finalizeTransaction($transactionId);
+            if ($finalizeResult === false) {
+                $errorMessage = $this->client->errorMessage;
+                // Try to cancel lease, ignore error if this call is failing as well.
+                $this->client->cancelOrder($leaseNumber);
+                throw new InvalidFlexshopperResponse(__("Invalid response from FlexShopper, order can't proceed: $errorMessage"));
+            }
 
             return $this->jsonFactory->create()
                 ->setData([
