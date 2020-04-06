@@ -17,7 +17,7 @@ Integration with FlexShopper payment solutions
 
 ### Type 1: Zip file
 
- - Unzip the zip file in `app/code/FlexShopper`
+ - Unzip the zip file in `app/code/FlexShopper/Payments`
  - Enable the module by running `php bin/magento module:enable FlexShopper_Payments`
  - Apply database updates by running `php bin/magento setup:upgrade`\*
  - Flush the cache by running `php bin/magento cache:flush`
