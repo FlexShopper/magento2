@@ -58,7 +58,7 @@ define(
                                         item.thumbnail
                                     ],
                                     shipping: {
-                                        cost: shippingMethod.amount,
+                                        cost: shippingMethod?shippingMethod.amount:0,
                                         date: new Date().toString(),
                                         method: 'ground'
                                     }
