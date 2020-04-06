@@ -6,6 +6,9 @@ namespace FlexShopper\Payments\Model\Payment;
 use FlexShopper\Payments\Helper\Data;
 use FlexShopper\Payments\Model\Client;
 use Magento\Directory\Helper\Data as DirectoryHelper;
+use Magento\InventorySalesApi\Api\Data\SalesChannelInterface;
+use Magento\InventorySalesApi\Api\StockResolverInterface;
+use Magento\InventorySalesApi\Model\GetStockItemDataInterface;
 
 /**
  * Class FlexShopperPayments
@@ -33,6 +36,16 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
     private $client;
 
     /**
+     * @var StockResolverInterface 
+     */
+    private $stockResolver;
+
+    /**
+     * @var GetStockItemDataInterface 
+     */
+    private $getStockItemData;
+
+    /**
      * FlexShopperPayments constructor.
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
@@ -41,11 +54,15 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
      * @param \Magento\Payment\Helper\Data $paymentData
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Payment\Model\Method\Logger $logger
+     * @param \Magento\Checkout\Model\Session $session
+     * @param Data $helper
+     * @param Client $client
+     * @param StockResolverInterface $stockResolver
+     * @param GetStockItemDataInterface $getStockItemData
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
      * @param array $data
      * @param DirectoryHelper|null $directory
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         \Magento\Framework\Model\Context $context,
@@ -58,6 +75,8 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Checkout\Model\Session $session,
         Data $helper,
         Client $client,
+        StockResolverInterface $stockResolver,
+        GetStockItemDataInterface $getStockItemData,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = [],
@@ -67,6 +86,8 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         $this->session = $session;
         $this->helper = $helper;
         $this->client = $client;
+        $this->stockResolver = $stockResolver;
+        $this->getStockItemData = $getStockItemData;
     }
 
 
@@ -88,7 +109,7 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
             if ($item->getProduct()->getData('flexshopper_leasing_enabled') == false) { // this = to '0' or '1', or null
                 return false;
             }
-            if ($item->getQtyBackordered() > 0) {
+            if ($this->quoteItemHasBackorder($item)) {
                 return false;
             }
         }
@@ -98,6 +119,27 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         }
 
         return parent::isAvailable($quote);
+    }
+    
+    protected function quoteItemHasBackorder($quoteItem) {
+        $websiteCode = $quoteItem->getQuote()->getStore()->getWebsite()->getCode();
+        $stock = $this->stockResolver->execute(SalesChannelInterface::TYPE_WEBSITE, $websiteCode);
+        $stockId = $stock->getStockId();
+        
+        $stockItemData = $this->getStockItemData->execute($quoteItem->getSku(), $stockId);
+        if($stockItemData) {
+            $backOrderQty = $quoteItem->getQty() - $stockItemData[GetStockItemDataInterface::QUANTITY];
+            if ($backOrderQty > 0) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+        
     }
 
     public function apiCredentialsExist() {
