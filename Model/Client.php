@@ -52,6 +52,12 @@ class Client
     }
 
     private function call($uri, $method = 'GET', $jsonBody = null) {
+
+        $log = [
+            'uri' => $uri,
+            'method' => $method,
+            'jsonBody' => $jsonBody
+        ];
         try {
             $flexShopperClient = new GuzzleClient([
                 'base_uri' => $this->helper->getBaseUri(),
@@ -60,12 +66,15 @@ class Client
                     'Authorization' => $this->helper->getApiKey()
                 ]
             ]);
+
             $response = $flexShopperClient->request($method, '/v3' . $uri);
-            $this->logger->debug($response->getBody());
+            $log['response'] = $response->getBody();
+            $this->logger->debug($log);
             return $response->getBody();
         } catch (\Exception $e) {
             $this->errorMessage = $e->getMessage();
-            $this->logger->debug($this->errorMessage);
+            $log['errorMessage'] = $this->errorMessage;
+            $this->logger->debug($log);
             return false;
         }
     }
