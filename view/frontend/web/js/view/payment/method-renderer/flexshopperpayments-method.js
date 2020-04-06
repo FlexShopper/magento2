@@ -15,6 +15,7 @@ define(
                 grandTotalAmount: null,
                 quoteId: null,
                 isReviewRequired: false,
+                display: 'block'
             },
 
             /**
@@ -97,6 +98,7 @@ define(
                 };
                 script.onerror = function(e) {
                     alert('Failed to load FlexShopper');
+                    self.display('none');
                     console.log(e);
                 };
 
@@ -113,7 +115,7 @@ define(
                 var self = this;
 
                 this._super()
-                    .observe(['active', 'isReviewRequired', 'customerEmail']);
+                    .observe(['active', 'isReviewRequired', 'customerEmail','display']);
 
                 this.grandTotalAmount = quote.totals()['base_grand_total'];
 
@@ -143,7 +145,8 @@ define(
                 this.active(active);
 
                 return active;
-            }
+            },
+            
         });
     }
 );
