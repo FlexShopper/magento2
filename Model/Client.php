@@ -32,17 +32,23 @@ class Client
     private $timeout = "10.0";
 
     public $errorMessage = "";
+    /**
+     * @var \Magento\Payment\Model\Method\Logger
+     */
+    private \Magento\Payment\Model\Method\Logger $logger;
 
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Controller\Result\JsonFactory $jsonFactory,
         \Magento\Framework\Serialize\Serializer\Json $json,
+        \Magento\Payment\Model\Method\Logger $logger,
         Data $helper
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->jsonFactory = $jsonFactory;
         $this->json = $json;
         $this->helper = $helper;
+        $this->logger = $logger;
     }
 
     private function call($uri, $method = 'GET', $jsonBody = null) {
@@ -55,9 +61,11 @@ class Client
                 ]
             ]);
             $response = $flexShopperClient->request($method, '/v3' . $uri);
+            $this->logger->debug($response->getBody());
             return $response->getBody();
         } catch (\Exception $e) {
             $this->errorMessage = $e->getMessage();
+            $this->logger->debug($this->errorMessage);
             return false;
         }
     }
