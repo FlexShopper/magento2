@@ -35,7 +35,7 @@ class Client
     /**
      * @var \Magento\Payment\Model\Method\Logger
      */
-    private \Magento\Payment\Model\Method\Logger $logger;
+    private $logger;
 
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
