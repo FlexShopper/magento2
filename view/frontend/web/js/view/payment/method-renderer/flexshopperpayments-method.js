@@ -47,6 +47,14 @@ define(
                                 } else {
                                     brand = 'n/a';
                                 }
+                                
+                                if(index == 0) {
+                                    var shippingCost = shippingMethod?shippingMethod.amount:0;
+                                }
+                                else {
+                                    var shippingCost = 0;
+                                }
+                                
                                 flexItems.push({
                                     description: item.name,
                                     sku: item.sku,
@@ -58,7 +66,7 @@ define(
                                         item.thumbnail
                                     ],
                                     shipping: {
-                                        cost: shippingMethod?shippingMethod.amount:0,
+                                        cost: shippingCost,
                                         date: new Date().toString(),
                                         method: 'ground'
                                     }
