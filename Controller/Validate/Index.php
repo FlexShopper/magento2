@@ -76,6 +76,7 @@ class Index extends \Magento\Framework\App\Action\Action implements \Magento\Fra
 
             $quote = $this->checkoutSession->getQuote();
             $quote->setFlexshopperId($leaseNumber);
+            $quote->setFlexshopperTxid($transactionId);
             $quote->save();
 
             if (!$orderStatus) {
