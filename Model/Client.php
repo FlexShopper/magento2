@@ -9,6 +9,7 @@ use Zend\Json\Json;
 
 class Client
 {
+    const EMPTY_ITEMS = '{"items": {}}';
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
@@ -104,7 +105,7 @@ class Client
 
     public function confirmShipment($flexshopperId, $carrier = 'ground', $items = false) {
         $jsonItems = [];
-        $jsonBody = '';
+        $jsonBody = self::EMPTY_ITEMS;;
         if (is_array($items)) {
             /** @var \Magento\Sales\Model\Order\Shipment\Item $item */
             foreach ($items as $item) {
@@ -125,7 +126,7 @@ class Client
 
     public function rma($flexshopperId, $items = false) {
         $jsonItems = [];
-        $jsonBody = '';
+        $jsonBody = self::EMPTY_ITEMS;;
         if (is_array($items)) {
             /** @var \Magento\Sales\Model\Order\Shipment\Item $item */
             foreach ($items as $item) {
@@ -144,7 +145,8 @@ class Client
     }
 
     public function cancelOrder($flexshopperId) {
-        return $this->call("/transactions/${flexshopperId}/cancel", 'POST');
+        $jsonBody = self::EMPTY_ITEMS;
+        return $this->call("/transactions/${flexshopperId}/cancel", 'POST', $jsonBody);
     }
 
 }
