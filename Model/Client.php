@@ -68,7 +68,7 @@ class Client
                 ]
             ]);
 
-            $response = $flexShopperClient->request($method, '/v3' . $uri);
+            $response = $flexShopperClient->request($method, '/v3' . $uri, ['body' => $jsonBody]);
             $log['response'] = $response->getBody();
             $this->logger->debug($log);
             return $response->getBody();

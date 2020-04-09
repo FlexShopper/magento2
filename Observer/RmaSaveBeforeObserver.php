@@ -36,10 +36,10 @@ class RmaSaveBeforeObserver implements ObserverInterface
         } else {
             $items = $rma->getItems();
         }
-        $flexshopperId = $order->getFlexshopperId();
+        $transactionId = $order->getFlexshopperTxid();
 
-        if ($flexshopperId) {
-            $this->client->rma($flexshopperId, $items);
+        if ($transactionId) {
+            $this->client->rma($transactionId, $items);
         }
     }
 }

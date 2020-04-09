@@ -21,9 +21,9 @@ class OrderPlugin
 
     public function beforeCancel(\Magento\Sales\Model\Order $subject)
     {
-        $flexshopperId = $subject->getFlexshopperId();
-        if ($flexshopperId) {
-            $result = $this->client->cancelOrder($flexshopperId);
+        $transactionId = $subject->getFlexshopperTxid();
+        if ($transactionId) {
+            $result = $this->client->cancelOrder($transactionId);
             if ($result === false) {
                 $errorMessage = $this->client->errorMessage;
                 throw new InvalidFlexshopperResponse(__("Invalid response from FlexShopper, order can't be canceled: $errorMessage"));

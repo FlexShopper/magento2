@@ -20,6 +20,7 @@ class SalesEventQuoteSubmitBeforeObserver implements ObserverInterface
      */
     private $attributes = [
         'flexshopper_id',
+        'flexshopper_txid'
     ];
 
 

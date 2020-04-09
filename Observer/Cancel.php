@@ -33,9 +33,9 @@ class Cancel implements \Magento\Framework\Event\ObserverInterface
     public function execute(Observer $observer)
     {
         $order = $observer->getEvent()->getOrder();
-        $flexshopperId = $order->getFlexshopperId();
-        if ($flexshopperId) {
-            $this->client->cancelOrder($flexshopperId);
+        $transactionId = $order->getFlexshopperTxid();
+        if ($transactionId) {
+            $this->client->cancelOrder($transactionId);
         }
     }
 }

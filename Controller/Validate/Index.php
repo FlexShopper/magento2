@@ -91,7 +91,7 @@ class Index extends \Magento\Framework\App\Action\Action implements \Magento\Fra
             if ($finalizeResult === false) {
                 $errorMessage = $this->client->errorMessage;
                 // Try to cancel lease, ignore error if this call is failing as well.
-                $this->client->cancelOrder($leaseNumber);
+                $this->client->cancelOrder($transactionId);
                 throw new InvalidFlexshopperResponse(__("Invalid response from FlexShopper, order can't proceed: $errorMessage"));
             }
 

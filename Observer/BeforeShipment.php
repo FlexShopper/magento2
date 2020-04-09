@@ -35,9 +35,9 @@ class BeforeShipment implements \Magento\Framework\Event\ObserverInterface
         } else {
             $items = $shipment->getAllItems();
         }
-        $flexshopperId = $order->getFlexshopperId();
-        if ($flexshopperId) {
-            $result = $this->client->confirmShipment($flexshopperId, 'ground', $items);
+        $transactionId = $order->getFlexshopperTxid();
+        if ($transactionId) {
+            $result = $this->client->confirmShipment($transactionId, 'ground', $items);
             if ($result === false) {
                 $errorMessage = $this->client->errorMessage;
                 throw new InvalidFlexshopperResponse(__("Invalid response from FlexShopper, shipment can't proceed: $errorMessage"));

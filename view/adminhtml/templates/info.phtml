@@ -1,8 +1,10 @@
 <?php
 /** @var \FlexShopper\Payments\Block\Adminhtml\Info $block */
 $flexShopperId = $block->getFlexshopperId();
+$flexShopperTxId = $block->getFlexshopperTxId();
 ?>
 
 <?php if ($flexShopperId): ?>
-Flexshopper ID: <?= $flexShopperId ?>
+Flexshopper Lease ID: <?= $flexShopperId ?><br/>
+Trasanction ID: <?= $flexShopperTxId ?>
 <?php endif ?>
