@@ -1,9 +1,13 @@
 {
-    "name": "flexshopper/module-payments",
+    "name": "flexshopper/magento2",
     "description": "Integration with FlexShopper payment solutions",
     "type": "magento2-module",
-    "license": "proprietary",
+    "license": "MIT",
     "authors": [
+        {
+            "name": "FlexShopper",
+            "email": "development@flexshopper.com"
+        },
         {
             "name": "Trellis",
             "email": "contact@trellis.co"
