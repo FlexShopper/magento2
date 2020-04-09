@@ -17,6 +17,6 @@ class Info extends \Magento\Backend\Block\Template
     {
         $layout = $this->getLayout();
         $paymentBlock = $layout->getBlock('order_payment');
-        return $paymentBlock->getParentBlock()->getOrder()->getFlexshopperTxId();
+        return $paymentBlock->getParentBlock()->getOrder()->getFlexshopperTxid();
     }
 }
