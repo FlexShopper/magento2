@@ -9,7 +9,7 @@ use Zend\Json\Json;
 
 class Client
 {
-    const EMPTY_ITEMS = '{"items": {}}';
+    const EMPTY_ITEMS = '{"items": []}';
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
