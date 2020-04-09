@@ -30,11 +30,7 @@ class BeforeShipment implements \Magento\Framework\Event\ObserverInterface
         /** @var Shipment $shipment */
         $shipment = $observer->getEvent()->getShipment();
         $order = $shipment->getOrder();
-        if ($shipment->getTotalQty() == $order->getTotalQtyOrdered()) {
-            $items = false;
-        } else {
-            $items = $shipment->getAllItems();
-        }
+        $items = $shipment->getAllItems();
         $transactionId = $order->getFlexshopperTxid();
         if ($transactionId) {
             $result = $this->client->confirmShipment($transactionId, 'ground', $items);
