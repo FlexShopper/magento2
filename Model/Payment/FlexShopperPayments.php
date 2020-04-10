@@ -36,12 +36,12 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
     private $client;
 
     /**
-     * @var StockResolverInterface 
+     * @var StockResolverInterface
      */
     private $stockResolver;
 
     /**
-     * @var GetStockItemDataInterface 
+     * @var GetStockItemDataInterface
      */
     private $getStockItemData;
 
@@ -120,12 +120,29 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
 
         return parent::isAvailable($quote);
     }
-    
+
     protected function quoteItemHasBackorder($quoteItem) {
         $websiteCode = $quoteItem->getQuote()->getStore()->getWebsite()->getCode();
         $stock = $this->stockResolver->execute(SalesChannelInterface::TYPE_WEBSITE, $websiteCode);
         $stockId = $stock->getStockId();
-        
+
+        if ($quoteItem->getProductType() === 'bundle') {
+            $options = $quoteItem->getOptions();
+            foreach ($options as $option) {
+                /** @var \Magento\Quote\Model\Quote\Item\Option $option */
+                $typeId = $option->getProduct()->getTypeId();
+                if ($typeId !== 'bundle') {
+                    $stockItemData = $this->getStockItemData->execute($option->getProduct()->getSku(), $stockId);
+                    $backOrderQty = $option->getItem()->getQty() - $stockItemData[GetStockItemDataInterface::QUANTITY];
+                    if ($backOrderQty > 0) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         $stockItemData = $this->getStockItemData->execute($quoteItem->getSku(), $stockId);
         if($stockItemData) {
             $backOrderQty = $quoteItem->getQty() - $stockItemData[GetStockItemDataInterface::QUANTITY];
@@ -139,7 +156,7 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         else {
             return false;
         }
-        
+
     }
 
     public function apiCredentialsExist() {
