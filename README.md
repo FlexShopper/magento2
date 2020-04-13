@@ -15,25 +15,23 @@ Integration with FlexShopper payment solutions
 ## Installation
 \* = in production please use the `--keep-generated` option
 
+We recommend a staging/development site and try installation on it before installing the extension on the production site.
+
+Make sure you have a backup of the Magento files and database before proceeding.
+
 ### Type 1: Zip file
 
- - Unzip the zip file in `app/code/FlexShopper/Payments`
+ - Uncompress the archive file in `app/code/FlexShopper/Payments`
  - Enable the module by running `php bin/magento module:enable FlexShopper_Payments`
- - Apply database updates by running `php bin/magento setup:upgrade`\*
- - Flush the cache by running `php bin/magento cache:flush`
+ - Apply database updates by running `php bin/magento setup:upgrade` \*
+ - Regenerate static content by running `php bin/magento setup:static-content:deploy`
 
 ### Type 2: Composer
 
- - Make the module available in a composer repository for example:
-    - private repository `repo.magento.com`
-    - public repository `packagist.org`
-    - public github repository as vcs
- - Add the composer repository to the configuration by running `composer config repositories.repo.magento.com composer https://repo.magento.com/`
- - Install the module composer by running `composer require flexshopper/module-payments`
+ - Install the module composer by running `composer require flexshopper/magento2`
  - enable the module by running `php bin/magento module:enable FlexShopper_Payments`
- - apply database updates by running `php bin/magento setup:upgrade`\*
- - Flush the cache by running `php bin/magento cache:flush`
-
+ - apply database updates by running `php bin/magento setup:upgrade` \*
+ - Regenerate static content by running `php bin/magento setup:static-content:deploy`
 
 ## Configuration
 
