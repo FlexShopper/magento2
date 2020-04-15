@@ -107,7 +107,7 @@ The following actions will communicate with FlexShopper, in addition to order pl
 
 - Cancelling an order will send the cancellation to FlexShopper
 - Shipping an order (fully or partially) will send the information to FlexShopper
-- (Commerce only) Receiving an RMA will send the return information to FlexShopper
+- (Commerce only) Marking a return as "Received" send the return information to FlexShopper
 
 ## Limitations
 
