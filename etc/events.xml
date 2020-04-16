@@ -12,4 +12,7 @@
     <event name="magento_rma_save_before">
         <observer name="flexshopper_magento_rma_save_before" instance="FlexShopper\Payments\Observer\RmaSaveBeforeObserver" />
     </event>
+    <event name="sales_model_service_quote_submit_failure">
+        <observer name="inventory" instance="FlexShopper\Payments\Observer\RevertLeaseObserver"/>
+    </event>
 </config>

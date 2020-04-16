@@ -7,9 +7,10 @@ namespace FlexShopper\Payments\Observer;
 use FlexShopper\Payments\Model\Client;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Quote\Model\Quote;
 use Magento\Rma\Model\Rma;
 
-class RmaSaveBeforeObserver implements ObserverInterface
+class RevertLeaseObserver implements ObserverInterface
 {
     /**
      * @var Client
@@ -19,7 +20,6 @@ class RmaSaveBeforeObserver implements ObserverInterface
     public function __construct(
         Client $client
     ) {
-
         $this->client = $client;
     }
 
@@ -28,18 +28,13 @@ class RmaSaveBeforeObserver implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        /** @var Rma $rma */
-        $rma = $observer->getEvent()->getRma();
-        $order = $rma->getOrder();
-        if (count($rma->getItems()) == $order->getTotalQtyOrdered()) {
-            $items = false;
-        } else {
-            $items = $rma->getItems();
-        }
-        $transactionId = $order->getFlexshopperTxid();
+        /** @var Quote $quote */
+        $quote = $observer->getEvent()->getQuote();
+
+        $transactionId = $quote->getFlexshopperTxid();
 
         if ($transactionId) {
-            $this->client->rma($transactionId, $items);
+            $this->client->cancelOrder($transactionId);
         }
     }
 }
