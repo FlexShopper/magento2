@@ -4,3 +4,7 @@
     min-width: 200px;
     height: auto;
 }
+#flexshopper-button.disabled {
+    pointer-events: none;
+    opacity: 0.4;
+}

@@ -28,7 +28,7 @@
         </div>
         <div class="actions-toolbar">
             <div class="primary">
-                <div id="flexshopper-button"></div>
+                <div id="flexshopper-button" data-bind="css: {disabled: !isPlaceOrderActionAllowed()}"></div>
                 <button class="action primary checkout"
                         style="display: none;"
                         id="flexshopper-button-real"
