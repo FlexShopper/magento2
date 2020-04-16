@@ -149,6 +149,11 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
             return false;
         }
 
+        if ($quoteItem->getProductType() === 'configurable') {
+            //configurables do not have their own stock, so they cannot be a backorder
+            return false;
+        }
+
         $stockItemInformation = $this->stockItemRepository->get($quoteItem->getProductId());
         if($stockItemInformation) {
             if($this->hasInfinteStock($stockItemInformation)) {
