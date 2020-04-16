@@ -5,10 +5,11 @@ namespace FlexShopper\Payments\Model\Payment;
 
 use FlexShopper\Payments\Helper\Data;
 use FlexShopper\Payments\Model\Client;
+use Magento\CatalogInventory\Model\Configuration;
+use Magento\CatalogInventory\Model\Stock\StockItemRepository;
 use Magento\Directory\Helper\Data as DirectoryHelper;
 use Magento\InventorySalesApi\Api\Data\SalesChannelInterface;
 use Magento\InventorySalesApi\Api\StockResolverInterface;
-use Magento\InventorySalesApi\Model\GetStockItemDataInterface;
 
 /**
  * Class FlexShopperPayments
@@ -34,16 +35,18 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
      * @var Client
      */
     private $client;
+    
+    
 
     /**
-     * @var StockResolverInterface
+     * @var StockItemRepository 
      */
-    private $stockResolver;
+    private $stockItemRepository;
 
     /**
-     * @var GetStockItemDataInterface
+     * @var Configuration 
      */
-    private $getStockItemData;
+    private $stockConfiguration;
 
     /**
      * FlexShopperPayments constructor.
@@ -53,12 +56,12 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
      * @param \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory
      * @param \Magento\Payment\Helper\Data $paymentData
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param Configuration $stockConfiguration
      * @param \Magento\Payment\Model\Method\Logger $logger
      * @param \Magento\Checkout\Model\Session $session
+     * @param StockItemRepository $stockItemRepository
      * @param Data $helper
      * @param Client $client
-     * @param StockResolverInterface $stockResolver
-     * @param GetStockItemDataInterface $getStockItemData
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
      * @param array $data
@@ -71,12 +74,12 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
         \Magento\Payment\Helper\Data $paymentData,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\CatalogInventory\Model\Configuration $stockConfiguration,
         \Magento\Payment\Model\Method\Logger $logger,
         \Magento\Checkout\Model\Session $session,
+        StockItemRepository $stockItemRepository,
         Data $helper,
         Client $client,
-        StockResolverInterface $stockResolver,
-        GetStockItemDataInterface $getStockItemData,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = [],
@@ -86,8 +89,8 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         $this->session = $session;
         $this->helper = $helper;
         $this->client = $client;
-        $this->stockResolver = $stockResolver;
-        $this->getStockItemData = $getStockItemData;
+        $this->stockItemRepository = $stockItemRepository;
+        $this->stockConfiguration = $stockConfiguration;
     }
 
 
@@ -122,30 +125,36 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
     }
 
     protected function quoteItemHasBackorder($quoteItem) {
-        $websiteCode = $quoteItem->getQuote()->getStore()->getWebsite()->getCode();
-        $stock = $this->stockResolver->execute(SalesChannelInterface::TYPE_WEBSITE, $websiteCode);
-        $stockId = $stock->getStockId();
-
         if ($quoteItem->getProductType() === 'bundle') {
             $options = $quoteItem->getOptions();
             foreach ($options as $option) {
                 /** @var \Magento\Quote\Model\Quote\Item\Option $option */
                 $typeId = $option->getProduct()->getTypeId();
                 if ($typeId !== 'bundle') {
-                    $stockItemData = $this->getStockItemData->execute($option->getProduct()->getSku(), $stockId);
-                    $backOrderQty = $option->getItem()->getQty() - $stockItemData[GetStockItemDataInterface::QUANTITY];
-                    if ($backOrderQty > 0) {
-                        return true;
+                    $stockItemInformation = $this->stockItemRepository->get($option->getProduct()->getId());
+                    if($stockItemInformation) {
+
+                        if($this->hasInfinteStock($stockItemInformation)) {
+                            return false;
+                        }
+                        $backOrderQty = $option->getItem()->getQty() - $stockItemInformation->getQty();
+                        if ($backOrderQty > 0) {
+                            return true;
+                        }
                     }
+                    
                 }
             }
 
             return false;
         }
 
-        $stockItemData = $this->getStockItemData->execute($quoteItem->getSku(), $stockId);
-        if($stockItemData) {
-            $backOrderQty = $quoteItem->getQty() - $stockItemData[GetStockItemDataInterface::QUANTITY];
+        $stockItemInformation = $this->stockItemRepository->get($quoteItem->getProductId());
+        if($stockItemInformation) {
+            if($this->hasInfinteStock($stockItemInformation)) {
+                return false;
+            }
+            $backOrderQty = $quoteItem->getQty() - $stockItemInformation->getQty();
             if ($backOrderQty > 0) {
                 return true;
             }
@@ -157,6 +166,19 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
             return false;
         }
 
+    }
+
+    /**
+     * @param $stockItem
+     * @return int
+     */
+    private function hasInfinteStock($stockItem) {
+        if(!$stockItem->getUseConfigManageStock()) {
+            return !$stockItem->getManageStock();
+        }
+        else {
+            return !$this->stockConfiguration->getManageStock();
+        }
     }
 
     public function apiCredentialsExist() {
