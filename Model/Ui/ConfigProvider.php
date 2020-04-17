@@ -41,6 +41,7 @@ class ConfigProvider implements ConfigProviderInterface
                     'authKey' => $this->helper->getAuthKey(),
                     'mode' => $this->helper->getMode(),
                     'validateUrl' => $this->urlInterface->getUrl('flexshopper/validate/index'),
+                    'cancelUrl' => $this->urlInterface->getUrl('flexshopper/cancel/index'),
                     'brandAttr' => $this->helper->getBrandAttribute()
                 ]
             ]

@@ -22,6 +22,10 @@ define([
             return window.checkoutConfig.payment[this.code].validateUrl;
         },
 
+        getCancelUrl: function () {
+            return window.checkoutConfig.payment[this.code].cancelUrl;
+        },
+
         getBrandAttr: function () {
             return window.checkoutConfig.payment[this.code].brandAttr;
         },

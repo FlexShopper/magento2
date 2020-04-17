@@ -90,6 +90,11 @@ define(
                                         self.placeOrder();
                                     } else {
                                         console.log(data);
+                                        // Cancel order
+                                        fetch(adapter.getCancelUrl(), {
+                                            method: 'POST',
+                                            body: JSON.stringify(data)
+                                        });
                                         alert(data.error);
                                     }
                                 });

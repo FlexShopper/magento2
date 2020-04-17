@@ -3,14 +3,11 @@
 namespace FlexShopper\Payments\Controller\Validate;
 
 use FlexShopper\Payments\Exception\InvalidFlexshopperResponse;
-use GuzzleHttp\Client;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Quote\Model\Quote;
-use Zend\Diactoros\Response\JsonResponse;
 
 class Index extends \Magento\Framework\App\Action\Action implements \Magento\Framework\App\CsrfAwareActionInterface
 {
