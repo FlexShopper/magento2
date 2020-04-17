@@ -17,7 +17,7 @@ class Index extends \Magento\Framework\App\Action\Action
     /**
      * @var \Magento\Framework\Serialize\Serializer\Json
      */
-    private \Magento\Framework\Serialize\Serializer\Json $json;
+    private $json;
 
     /**
      * @var \Magento\Framework\Controller\Result\JsonFactory
