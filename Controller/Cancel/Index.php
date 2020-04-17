@@ -18,6 +18,10 @@ class Index extends \Magento\Framework\App\Action\Action
      * @var \Magento\Framework\Serialize\Serializer\Json
      */
     private $json;
+    /**
+     * @var \Magento\Checkout\Model\Session
+     */
+    private \Magento\Checkout\Model\Session $cartSession;
 
     /**
      * @var \Magento\Framework\Controller\Result\JsonFactory
@@ -26,18 +30,19 @@ class Index extends \Magento\Framework\App\Action\Action
     public function __construct(
         Context $context,
         \Magento\Framework\Serialize\Serializer\Json $json,
-        \FlexShopper\Payments\Model\Client $client
+        \FlexShopper\Payments\Model\Client $client,
+        \Magento\Checkout\Model\Session $cartSession
     ) {
         parent::__construct($context);
         $this->client = $client;
         $this->json = $json;
+        $this->cartSession = $cartSession;
     }
 
 
     public function execute()
     {
-        $body = $this->json->unserialize($this->getRequest()->getContent());
-        $transactionId = $body['transactionId'];
+        $transactionId = $this->cartSession->getQuote()->getFlexshopperTxid();
         if ($transactionId) {
             $this->client->cancelOrder($transactionId);
         }

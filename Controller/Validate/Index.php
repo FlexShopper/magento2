@@ -62,6 +62,12 @@ class Index extends \Magento\Framework\App\Action\Action implements \Magento\Fra
 
             $leaseNumber = $body['leaseNumber'];
             $transactionId = $body['transactionId'];
+
+            $quote = $this->checkoutSession->getQuote();
+            $quote->setFlexshopperId($leaseNumber);
+            $quote->setFlexshopperTxid($transactionId);
+            $quote->save();
+
             $transaction = $this->json->unserialize(
                 $this->client->getTransaction($transactionId)
             );
@@ -70,11 +76,6 @@ class Index extends \Magento\Framework\App\Action\Action implements \Magento\Fra
             $this->logger->debug('Flexshopper transaction id:' . $transactionId);
 
             $orderStatus = $this->checkOrder($transaction);
-
-            $quote = $this->checkoutSession->getQuote();
-            $quote->setFlexshopperId($leaseNumber);
-            $quote->setFlexshopperTxid($transactionId);
-            $quote->save();
 
             if (!$orderStatus) {
                 $this->logger->debug('Invalid order');
