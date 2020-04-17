@@ -95,7 +95,7 @@ define(
                                             method: 'POST',
                                             body: JSON.stringify(data)
                                         });
-                                        alert(data.error);
+                                        alert(data.errors);
                                     }
                                 });
                         }
