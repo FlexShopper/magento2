@@ -9,4 +9,7 @@
     <event name="sales_model_service_quote_submit_before">
         <observer name="flexshopper_sales_model_service_quote_submit_before" instance="FlexShopper\Payments\Observer\SalesEventQuoteSubmitBeforeObserver" />
     </event>
+    <event name="sales_model_service_quote_submit_failure">
+        <observer name="inventory" instance="FlexShopper\Payments\Observer\RevertLeaseObserver"/>
+    </event>
 </config>
