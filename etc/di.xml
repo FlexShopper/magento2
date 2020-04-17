@@ -4,4 +4,8 @@
     <type name="Magento\Sales\Model\Order">
         <plugin sortOrder="1" name="flexShopperPaymentsOrder" type="FlexShopper\Payments\Plugin\Model\OrderPlugin"/>
     </type>
+    
+    <type name="Magento\Rma\Model\Rma">
+        <plugin sortOrder="1" name="flexShopperRmaSend" type="FlexShopper\Payments\Plugin\BeforeRma"/>
+    </type>
 </config>

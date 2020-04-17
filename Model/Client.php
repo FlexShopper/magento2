@@ -133,8 +133,8 @@ class Client
                 /** @var \Magento\Rma\Api\Data\ItemInterface $item */
                 $jsonItems[] =
                     [
-                        'sku' => $item->getSku(),
-                        'quantity' => $item->getQty(),
+                        'sku' => $item->getProductSku(),
+                        'quantity' => $item->getQtyReturned(),
                     ];
 
             }
