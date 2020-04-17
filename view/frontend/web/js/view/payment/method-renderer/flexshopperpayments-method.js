@@ -93,7 +93,7 @@ define(
                                         // Cancel order
                                         fetch(adapter.getCancelUrl(), {
                                             method: 'POST',
-                                            body: JSON.stringify(data)
+                                            body: response.toString()
                                         });
                                         alert(data.errors);
                                     }
