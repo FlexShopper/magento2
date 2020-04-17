@@ -21,7 +21,7 @@ class Index extends \Magento\Framework\App\Action\Action
     /**
      * @var \Magento\Checkout\Model\Session
      */
-    private \Magento\Checkout\Model\Session $cartSession;
+    private $cartSession;
 
     /**
      * @var \Magento\Framework\Controller\Result\JsonFactory
