@@ -5,6 +5,7 @@ $flexShopperTxid = $block->getFlexshopperTxid();
 ?>
 
 <?php if ($flexShopperId): ?>
-Flexshopper Lease ID: <?= $flexShopperId ?><br/>
-Transaction ID: <?= $flexShopperTxid ?>
+<?= __('Flexshopper Lease ID:') ?> <?= $flexShopperId ?><br/>
+<?= __('Transaction ID:') ?> <?= $flexShopperTxid ?><br/>
+<?= __('In order to receive payment, please provide shipping details.') ?>
 <?php endif ?>
