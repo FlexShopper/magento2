@@ -8,4 +8,6 @@
     <type name="Magento\Rma\Model\Rma">
         <plugin sortOrder="1" name="flexShopperRmaSend" type="FlexShopper\Payments\Plugin\BeforeRma"/>
     </type>
+
+    <preference for="Magento\Catalog\Ui\DataProvider\Product\ProductDataProvider" type="FlexShopper\Payments\Ui\DataProvider\Product\ProductDataProvider" />
 </config>
