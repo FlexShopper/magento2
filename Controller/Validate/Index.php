@@ -9,7 +9,7 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 
-class Index extends \Magento\Framework\App\Action\Action implements \Magento\Framework\App\CsrfAwareActionInterface
+class Index extends \Magento\Framework\App\Action\Action 
 {
     /**
      * @var \Magento\Framework\Controller\Result\JsonFactory
@@ -125,24 +125,5 @@ class Index extends \Magento\Framework\App\Action\Action implements \Magento\Fra
 
         return false; // If the user's session have a quote, this is always valid.
     }
-
-    /**
-     * @param RequestInterface $request
-     *
-     * @return bool|null
-     */
-    public function validateForCsrf(RequestInterface $request): ?bool
-    {
-        return true;
-    }
-
-    /**
-     * @param RequestInterface $request
-     *
-     * @return InvalidRequestException|null
-     */
-    public function createCsrfValidationException(RequestInterface $request): ?\Magento\Framework\App\Request\InvalidRequestException
-    {
-        return null;
-    }
+    
 }

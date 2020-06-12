@@ -9,5 +9,9 @@
         <plugin sortOrder="1" name="flexShopperRmaSend" type="FlexShopper\Payments\Plugin\BeforeRma"/>
     </type>
 
+    <type name="Magento\Framework\App\Request\CsrfValidator">
+        <plugin name="csrf_validator_skip" type="FlexShopper\Payments\Plugin\CsrfValidatorSkip" />
+    </type>
+
     <preference for="Magento\Catalog\Ui\DataProvider\Product\ProductDataProvider" type="FlexShopper\Payments\Ui\DataProvider\Product\ProductDataProvider" />
 </config>
