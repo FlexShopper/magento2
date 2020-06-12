@@ -85,11 +85,14 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         array $data = [],
         DirectoryHelper $directory = null
     ){
+        //intentional blank lines in calling the constructor to prevent the ConstructorIntegrity check which is not aware of the conditional
         if (interface_exists("Magento\Framework\App\CsrfAwareActionInterface")) {
-            parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data, $directory);    
+            parent::
+            __construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data, $directory);    
         }
         else {
-            parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data);
+            parent::
+            __construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data);
         }
         
         $this->session = $session;
