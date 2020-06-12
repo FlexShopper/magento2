@@ -84,8 +84,14 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = [],
         DirectoryHelper $directory = null
-    ) {
-        parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data, $directory);
+    ){
+        if (interface_exists("Magento\Framework\App\CsrfAwareActionInterface")) {
+            parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data, $directory);    
+        }
+        else {
+            parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data);
+        }
+        
         $this->session = $session;
         $this->helper = $helper;
         $this->client = $client;
