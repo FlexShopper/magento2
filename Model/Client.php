@@ -72,10 +72,10 @@ class Client
             $this->curl->setHeaders(['Authorization' => $this->helper->getApiKey()]);
 
             if($method == 'GET') {
-                $this->curl->get( $this->helper->getBaseUri().'/'.$uri);
+                $this->curl->get( $this->helper->getBaseUri().$uri);
             }
             else {
-                $this->curl->post($this->helper->getBaseUri().'/'.$uri, ['body' => $jsonBody]);
+                $this->curl->post($this->helper->getBaseUri().$uri, ['body' => $jsonBody]);
             }
 
 
