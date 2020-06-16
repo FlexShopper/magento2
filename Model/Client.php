@@ -69,13 +69,13 @@ class Client
 
 
             $this->curl->setTimeout($this->timeout);
-            $this->curl->setHeaders(['Authorization' => $this->helper->getApiKey()]);
+            $this->curl->setHeaders(['Authorization' => $this->helper->getApiKey(), 'Content-Type' => 'application/json']);
 
             if($method == 'GET') {
                 $this->curl->get( $this->helper->getBaseUri().$uri);
             }
             else {
-                $this->curl->post($this->helper->getBaseUri().$uri, ['body' => $jsonBody]);
+                $this->curl->post($this->helper->getBaseUri().$uri, $jsonBody);
             }
 
 
