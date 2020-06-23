@@ -30,7 +30,7 @@ class Client
     private $helper;
 
     /**
-     * @var CurlClient 
+     * @var CurlClient
      */
     private $curl;
 
@@ -71,11 +71,14 @@ class Client
             $this->curl->setTimeout($this->timeout);
             $this->curl->setHeaders(['Authorization' => $this->helper->getApiKey(), 'Content-Type' => 'application/json']);
 
+            $baseUri = rtrim($this->helper->getBaseUri(), '/') . '/';
+            $completeUri = $baseUri . ltrim($uri, '/');
+
             if($method == 'GET') {
-                $this->curl->get( $this->helper->getBaseUri().$uri);
+                $this->curl->get( $completeUri);
             }
             else {
-                $this->curl->post($this->helper->getBaseUri().$uri, $jsonBody);
+                $this->curl->post($completeUri, $jsonBody);
             }
 
 
@@ -96,7 +99,7 @@ class Client
 
     public function getMinimumAmount()
     {
-        $response = $this->call('settings/lease');
+        $response = $this->call('/settings/lease');
         if (!$response) {
             return $response;
         }
