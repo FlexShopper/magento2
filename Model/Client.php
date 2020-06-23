@@ -4,7 +4,6 @@
 namespace FlexShopper\Payments\Model;
 
 use FlexShopper\Payments\Helper\Data;
-use GuzzleHttp\Client as GuzzleClient;
 use Zend\Json\Json;
 
 class Client
@@ -30,6 +29,11 @@ class Client
      */
     private $helper;
 
+    /**
+     * @var CurlClient 
+     */
+    private $curl;
+
     private $timeout = "10.0";
 
     public $errorMessage = "";
@@ -42,6 +46,7 @@ class Client
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Controller\Result\JsonFactory $jsonFactory,
         \Magento\Framework\Serialize\Serializer\Json $json,
+        CurlClient $curl,
         \Magento\Payment\Model\Method\Logger $logger,
         Data $helper
     ) {
@@ -50,6 +55,7 @@ class Client
         $this->json = $json;
         $this->helper = $helper;
         $this->logger = $logger;
+        $this->curl = $curl;
     }
 
     private function call($uri, $method = 'GET', $jsonBody = null) {
@@ -60,18 +66,22 @@ class Client
             'jsonBody' => $jsonBody
         ];
         try {
-            $flexShopperClient = new GuzzleClient([
-                'base_uri' => $this->helper->getBaseUri(),
-                'timeout'  => $this->timeout,
-                'headers' => [
-                    'Authorization' => $this->helper->getApiKey()
-                ]
-            ]);
 
-            $response = $flexShopperClient->request($method, '/v3' . $uri, ['body' => $jsonBody]);
-            $log['response'] = $response->getBody();
+
+            $this->curl->setTimeout($this->timeout);
+            $this->curl->setHeaders(['Authorization' => $this->helper->getApiKey(), 'Content-Type' => 'application/json']);
+
+            if($method == 'GET') {
+                $this->curl->get( $this->helper->getBaseUri().$uri);
+            }
+            else {
+                $this->curl->post($this->helper->getBaseUri().$uri, $jsonBody);
+            }
+
+
+            $log['response'] = $this->curl->getBody();
             $this->logger->debug($log);
-            return $response->getBody();
+            return $this->curl->getBody();
         } catch (\Exception $e) {
             $this->errorMessage = $e->getMessage();
             $log['errorMessage'] = $this->errorMessage;
