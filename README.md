@@ -43,6 +43,8 @@ Make sure you have a backup of the Magento files and database before proceeding.
  - apply database updates by running `php bin/magento setup:upgrade` \*
  - Regenerate static content by running `php bin/magento setup:static-content:deploy`
 
+You may have to refresh the cache after installation.
+
 ## Configuration
 
 ### Enable the Payment Method
