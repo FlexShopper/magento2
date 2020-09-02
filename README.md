@@ -1,7 +1,5 @@
 # Magento 2 Module FlexShopper Payments
 
-    ``flexshopper/module-payments``
-
   * [Overview](#overview)
   * [Installation](#installation)
     + [Type 1: Zip file](#type-1--zip-file)
@@ -115,10 +113,6 @@ The following actions will communicate with FlexShopper, in addition to order pl
 - Mixed carts (FlexShopper enabled + FlexShopper disabled products) are not supported. In this case, the payment method will not show.
 - No invoice will be created for Flex Shopper orders and in case the merchant needs a payment document in Magento, they have to manually do it upon payment from FlexShopper, as there is no automated way of getting notified.
 
-## FAQ
+## Contact us 
 
-Q: FlexShopper does not show in the frontend.
-A: See "Conditions for the FlexShopper payment method to show in the frontend" in this document.
-
-Q: I get an error that FlexShopper cannot be loaded.
-A: Make sure your auth and API keys are correct.
+If you have any questions please contact us at sales@flexshopper.com
