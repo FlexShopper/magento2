@@ -131,6 +131,7 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         } catch(\InvalidArgumentException $e) {
             // This happens when the customer is trying to check out from a non-US IP, fail gracefully
             // Flexshopper should not be available in this case
+            $this->logger->debug(['Invalid response from payment gateway. GeoIP in effect?']);
             return false;
         }
 
