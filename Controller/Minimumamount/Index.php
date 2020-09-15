@@ -36,7 +36,12 @@ class Index extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $this->client->setTimeout('2.0');
-        $minimumAmount = $this->client->getMinimumAmount();
+        try {
+            $minimumAmount = $this->client->getMinimumAmount();
+        } catch(\InvalidArgumentException $e) {
+            // This happens when the customer is trying to check out from a non-US IP, fail gracefully
+            $minimumAmount = null;
+        }
         $result = $this->jsonFactory->create();
 
         if ($minimumAmount) {
