@@ -8,6 +8,7 @@ use FlexShopper\Payments\Model\Client;
 use Magento\CatalogInventory\Model\Configuration;
 use Magento\CatalogInventory\Model\Stock\StockItemRepository;
 use Magento\Directory\Helper\Data as DirectoryHelper;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\InventorySalesApi\Api\Data\SalesChannelInterface;
 use Magento\InventorySalesApi\Api\StockResolverInterface;
 
@@ -172,20 +173,25 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
             return false;
         }
 
-        $stockItemInformation = $this->stockItemRepository->get($quoteItem->getProductId());
-        if($stockItemInformation) {
-            if($this->hasInfinteStock($stockItemInformation)) {
-                return false;
-            }
-            $backOrderQty = $quoteItem->getQty() - $stockItemInformation->getQty();
-            if ($backOrderQty > 0) {
-                return true;
+        try {
+            $stockItemInformation = $this->stockItemRepository->get($quoteItem->getProductId());
+            if($stockItemInformation) {
+                if($this->hasInfinteStock($stockItemInformation)) {
+                    return false;
+                }
+                $backOrderQty = $quoteItem->getQty() - $stockItemInformation->getQty();
+                if ($backOrderQty > 0) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
             else {
                 return false;
-            }
+            }    
         }
-        else {
+        catch(NoSuchEntityException $ex) {
             return false;
         }
 
