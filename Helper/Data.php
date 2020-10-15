@@ -26,9 +26,9 @@ class Data extends AbstractHelper
     public function getBaseUri()
     {
         if ($this->getMode() == 'sandbox') {
-            return 'https://apis.sandbox.flexshopper.com/v3';
+            return 'https://apis.sandbox.flexshopper.com/v3/';
         }
-        return 'https://apis.flexshopper.com';
+        return 'https://apis.flexshopper.com/v3/';
     }
 
     public function getAuthKey()
@@ -43,7 +43,7 @@ class Data extends AbstractHelper
 
     public function getMinimumOrderValue()
     {
-        return $this->scopeConfig->getValue(self::CONFIG_API_KEY);
+        return $this->scopeConfig->getValue(self::CONFIG_MIN_ORDER_VALUE);
     }
 
     public function getBrandAttribute()

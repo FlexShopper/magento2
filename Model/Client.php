@@ -30,7 +30,7 @@ class Client
     private $helper;
 
     /**
-     * @var CurlClient 
+     * @var CurlClient
      */
     private $curl;
 
