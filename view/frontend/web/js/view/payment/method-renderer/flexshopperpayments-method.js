@@ -106,7 +106,21 @@ define(
                     console.log(e);
                 };
 
-                document.head.appendChild(script);
+                if (window.MutationObserver) {
+                    var observer = new MutationObserver(function (mutations) {
+                        if ($("#flexshopper-button").length) {
+                            document.head.appendChild(script);
+                            observer.disconnect();
+                        }
+                    });
+
+                    observer.observe(document.body, {
+                        childList: true,
+                        subtree: true
+                    });
+                } else {
+                    document.head.appendChild(script);
+                }
 
                 return self;
             },
