@@ -151,6 +151,10 @@ define(
                 return active;
             },
             
+            getFlexImageSrc: function() {
+                return adapter.getFlexImageSrc();
+            }
+            
         });
     }
 );

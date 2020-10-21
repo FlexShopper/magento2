@@ -30,6 +30,10 @@ define([
             return window.checkoutConfig.payment[this.code].brandAttr;
         },
 
+        getFlexImageSrc: function() {
+            return window.populateFlex.flexLogoImageUrl;
+        },
+
         getUrl: function () {
             let url = 'https://pp3.flexshopper.com/sdk/js'; // production
             if (window.checkoutConfig.payment[this.code].mode === 'sandbox') {
