@@ -4,6 +4,9 @@
 		<css src="FlexShopper_Payments::css/flexshopper.css"/>
 	</head>
 	<body>
+		<referenceContainer name="after.body.start">
+			<block class="FlexShopper\Payments\Block\PopulateFlex" name="populate-flex" template="FlexShopper_Payments::payment_image.phtml"/>
+		</referenceContainer>
 		<referenceBlock name="checkout.root">
 			<arguments>
 				<argument name="jsLayout" xsi:type="array">
