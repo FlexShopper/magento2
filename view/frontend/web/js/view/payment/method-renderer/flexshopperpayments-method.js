@@ -143,12 +143,6 @@ define(
                     }
                 });
 
-                quote.shippingAddress.subscribe(function () {
-                    if (self.isActive()) {
-                        self.reInitFlexShopper();
-                    }
-                });
-
                 return this;
             },
 

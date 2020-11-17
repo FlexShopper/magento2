@@ -1,6 +1,5 @@
 <?php
 
-
 namespace FlexShopper\Payments\Model\Payment;
 
 use FlexShopper\Payments\Helper\Data;
@@ -9,8 +8,7 @@ use Magento\CatalogInventory\Model\Configuration;
 use Magento\CatalogInventory\Model\Stock\StockItemRepository;
 use Magento\Directory\Helper\Data as DirectoryHelper;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\InventorySalesApi\Api\Data\SalesChannelInterface;
-use Magento\InventorySalesApi\Api\StockResolverInterface;
+use Magento\Quote\Api\Data\CartInterface;
 
 /**
  * Class FlexShopperPayments
@@ -19,7 +17,6 @@ use Magento\InventorySalesApi\Api\StockResolverInterface;
  */
 class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
 {
-
     protected $_code = "flexshopperpayments";
     protected $_isOffline = true;
 
@@ -37,8 +34,6 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
      */
     private $client;
 
-
-
     /**
      * @var StockItemRepository
      */
@@ -50,7 +45,6 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
     private $stockConfiguration;
 
     /**
-     * FlexShopperPayments constructor.
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory
@@ -85,13 +79,12 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = [],
         DirectoryHelper $directory = null
-    ){
+    ) {
         //intentional blank lines in calling the constructor to prevent the ConstructorIntegrity check which is not aware of the conditional
         if (interface_exists("Magento\Framework\App\CsrfAwareActionInterface")) {
             parent::
             __construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data, $directory);
-        }
-        else {
+        } else {
             parent::
             __construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data);
         }
@@ -103,14 +96,10 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         $this->stockConfiguration = $stockConfiguration;
     }
 
+    public function isAvailable(CartInterface $quote = null)
+    {
+        $sessionQuote = $this->session->getQuote() ?? $quote;
 
-    public function isAvailable(
-        \Magento\Quote\Api\Data\CartInterface $quote = null
-    ) {
-        $sessionQuote = $this->session->getQuote();
-        if(!$sessionQuote) {
-            $sessionQuote = $quote;
-        }
         $items = $sessionQuote->getAllItems();
 
         if (!$this->apiCredentialsExist()) {
@@ -118,8 +107,8 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         }
 
         /** @var \Magento\Quote\Model\Quote\Item $item */
-        foreach($items as $item) {
-            if ($item->getProduct()->getData('flexshopper_leasing_enabled') == false) { // this = to '0' or '1', or null
+        foreach ($items as $item) {
+            if ($item->getProduct()->getData('flexshopper_leasing_enabled') === false) { // this = to '0' or '1', or null
                 return false;
             }
             if ($this->quoteItemHasBackorder($item)) {
@@ -129,7 +118,7 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
 
         try {
             $minimumAmount = $this->client->getMinimumAmount();
-        } catch(\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             // This happens when the customer is trying to check out from a non-US IP, fail gracefully
             // Flexshopper should not be available in this case
             $this->logger->debug(['Invalid response from payment gateway. GeoIP in effect?']);
@@ -143,7 +132,8 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         return parent::isAvailable($quote);
     }
 
-    protected function quoteItemHasBackorder($quoteItem) {
+    protected function quoteItemHasBackorder($quoteItem)
+    {
         if ($quoteItem->getProductType() === 'bundle') {
             $options = $quoteItem->getOptions();
             foreach ($options as $option) {
@@ -151,9 +141,8 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
                 $typeId = $option->getProduct()->getTypeId();
                 if ($typeId !== 'bundle') {
                     $stockItemInformation = $this->stockItemRepository->get($option->getProduct()->getId());
-                    if($stockItemInformation) {
-
-                        if($this->hasInfinteStock($stockItemInformation)) {
+                    if ($stockItemInformation) {
+                        if ($this->hasInfinteStock($stockItemInformation)) {
                             return false;
                         }
                         $backOrderQty = $option->getItem()->getQty() - $stockItemInformation->getQty();
@@ -161,7 +150,6 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
                             return true;
                         }
                     }
-
                 }
             }
 
@@ -175,55 +163,42 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
 
         try {
             $stockItemInformation = $this->stockItemRepository->get($quoteItem->getProductId());
-            if($stockItemInformation) {
-                if($this->hasInfinteStock($stockItemInformation)) {
+            if ($stockItemInformation) {
+                if ($this->hasInfinteStock($stockItemInformation)) {
                     return false;
                 }
                 $backOrderQty = $quoteItem->getQty() - $stockItemInformation->getQty();
-                if ($backOrderQty > 0) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return $backOrderQty > 0;
             }
-            else {
-                return false;
-            }    
-        }
-        catch(NoSuchEntityException $ex) {
+
+            return false;
+        } catch (NoSuchEntityException $ex) {
             return false;
         }
-
     }
 
     /**
      * @param $stockItem
      * @return int
      */
-    private function hasInfinteStock($stockItem) {
-        if(!$stockItem->getUseConfigManageStock()) {
+    private function hasInfinteStock($stockItem)
+    {
+        if (!$stockItem->getUseConfigManageStock()) {
             return !$stockItem->getManageStock();
         }
-        else {
-            return !$this->stockConfiguration->getManageStock();
-        }
+
+        return !$this->stockConfiguration->getManageStock();
     }
 
-    public function apiCredentialsExist() {
-        if ($this->helper->getAuthkey() == '' ||
-            $this->helper->getApiKey() == ''
-        ) {
-            return false;
-        }
-
-        return true;
+    public function apiCredentialsExist(): bool
+    {
+        return $this->helper->getAuthkey() !== '' && $this->helper->getApiKey() !== '';
     }
 
     protected function getMinimumOrdervalue()
     {
         $apiMinValue = $this->client->getMinimumAmount();
-        return $apiMinValue? $apiMinValue : $this->helper->getMinimumOrderValue();
+
+        return $apiMinValue ?: $this->helper->getMinimumOrderValue();
     }
 }
-
