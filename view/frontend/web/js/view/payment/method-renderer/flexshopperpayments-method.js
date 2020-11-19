@@ -115,11 +115,7 @@ define(
                     var observer = new MutationObserver(function (mutations) {
                         if ($("#flexshopper-checkout-button").length) {
                             document.head.appendChild(script);
-                            if (this.isActive()) {
-                                $('button.checkout').hide();
-                            } else {
-                                $('#flexshopper-checkout-button').hide();
-                            }
+                            self.toggleButtons();
                             observer.disconnect();
                         }
                     });
@@ -130,14 +126,18 @@ define(
                     });
                 } else {
                     document.head.appendChild(script);
-                    if (this.isActive()) {
-                        $('button.checkout').hide();
-                    } else {
-                        $('#flexshopper-checkout-button').hide();
-                    }
+                    self.toggleButtons();
                 }
 
                 return self;
+            },
+
+            toggleButtons: function() {
+                if (this.isActive()) {
+                    $('button.checkout').hide();
+                } else {
+                    $('#flexshopper-checkout-button').hide();
+                }
             },
 
             selectPaymentMethod: function () {
