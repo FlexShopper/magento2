@@ -99,6 +99,7 @@ define(
                                 });
                         }
                     }).render('#flexshopper-button');
+                    $('#flexshopper-button').closest('.actions-toolbar').show();
                 };
                 script.onerror = function(e) {
                     alert('Failed to load FlexShopper');
