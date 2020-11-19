@@ -11,12 +11,16 @@ define(
             defaults: {
                 template: 'FlexShopper_Payments/payment/flexshopperpayments',
                 code: 'flexshopper',
-                active: true,
+                active: false,
                 grandTotalAmount: null,
                 quoteId: null,
                 isReviewRequired: false,
-                display: 'block'
+                display: 'block',
+                imports: {
+                    onActiveChange: 'active'
+                }
             },
+
 
             /**
              * Initialize view.
@@ -27,6 +31,7 @@ define(
                 var self = this;
 
                 self._super();
+                $('<div id="flexshopper-checkout-button"></div>').insertAfter('button.checkout');
 
                 var script = document.createElement('script');
                 script.type = 'text/javascript';
@@ -48,14 +53,14 @@ define(
                                 } else {
                                     brand = 'n/a';
                                 }
-                                
+
                                 if(index == 0) {
                                     var shippingCost = shippingMethod?shippingMethod.amount:0;
                                 }
                                 else {
                                     var shippingCost = 0;
                                 }
-                                
+
                                 flexItems.push({
                                     description: item.name,
                                     sku: item.sku,
@@ -98,8 +103,7 @@ define(
                                     }
                                 });
                         }
-                    }).render('#flexshopper-button');
-                    $('#flexshopper-button').closest('.actions-toolbar').show();
+                    }).render('#flexshopper-checkout-button');
                 };
                 script.onerror = function(e) {
                     alert('Failed to load FlexShopper');
@@ -107,23 +111,22 @@ define(
                     console.log(e);
                 };
 
-                if (window.MutationObserver) {
-                    var observer = new MutationObserver(function (mutations) {
-                        if ($("#flexshopper-button").length) {
-                            document.head.appendChild(script);
-                            observer.disconnect();
-                        }
-                    });
-
-                    observer.observe(document.body, {
-                        childList: true,
-                        subtree: true
-                    });
+                document.head.appendChild(script);
+                if (this.isActive()) {
+                    $('button.checkout').hide();
                 } else {
-                    document.head.appendChild(script);
+                    $('#flexshopper-checkout-button').hide();
                 }
 
                 return self;
+            },
+
+            selectPaymentMethod: function () {
+                this._super();
+                $('#flexshopper-checkout-button').show();
+                $('button.checkout').hide();
+
+                return true;
             },
 
             /**
@@ -159,7 +162,7 @@ define(
 
                 return active;
             },
-            
+
         });
     }
 );
