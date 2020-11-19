@@ -111,11 +111,30 @@ define(
                     console.log(e);
                 };
 
-                document.head.appendChild(script);
-                if (this.isActive()) {
-                    $('button.checkout').hide();
+                if (window.MutationObserver) {
+                    var observer = new MutationObserver(function (mutations) {
+                        if ($("#flexshopper-checkout-button").length) {
+                            document.head.appendChild(script);
+                            if (this.isActive()) {
+                                $('button.checkout').hide();
+                            } else {
+                                $('#flexshopper-checkout-button').hide();
+                            }
+                            observer.disconnect();
+                        }
+                    });
+
+                    observer.observe(document.body, {
+                        childList: true,
+                        subtree: true
+                    });
                 } else {
-                    $('#flexshopper-checkout-button').hide();
+                    document.head.appendChild(script);
+                    if (this.isActive()) {
+                        $('button.checkout').hide();
+                    } else {
+                        $('#flexshopper-checkout-button').hide();
+                    }
                 }
 
                 return self;
@@ -163,6 +182,9 @@ define(
                 return active;
             },
 
+            getFlexImageSrc: function() {
+                return adapter.getFlexImageSrc();
+            }
         });
     }
 );
