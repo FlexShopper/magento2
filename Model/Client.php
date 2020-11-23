@@ -41,6 +41,7 @@ class Client
      * @var \Magento\Payment\Model\Method\Logger
      */
     private $logger;
+    private $hlogger;
 
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -48,13 +49,15 @@ class Client
         \Magento\Framework\Serialize\Serializer\Json $json,
         CurlClient $curl,
         \Magento\Payment\Model\Method\Logger $logger,
-        Data $helper
+        Data $helper,
+        \Psr\Log\LoggerInterface $hlogger
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->jsonFactory = $jsonFactory;
         $this->json = $json;
         $this->helper = $helper;
         $this->logger = $logger;
+        $this->hlogger = $hlogger;
         $this->curl = $curl;
     }
 
@@ -70,6 +73,8 @@ class Client
 
             $this->curl->setTimeout($this->timeout);
             $this->curl->setHeaders(['Authorization' => $this->helper->getApiKey(), 'Content-Type' => 'application/json']);
+            $this->hlogger->debug('End Point - Authorization Header - '.$this->helper->getApiKey());
+            $this->hlogger->debug('End Point - '.$this->helper->getBaseUri().$uri);
 
             if($method == 'GET') {
                 $this->curl->get( $this->helper->getBaseUri().$uri);
@@ -96,7 +101,7 @@ class Client
 
     public function getMinimumAmount()
     {
-        $response = $this->call('settings/lease');
+        $response = $this->call('/settings/lease');
         if (!$response) {
             return $response;
         }

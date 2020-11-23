@@ -26,9 +26,9 @@ class Data extends AbstractHelper
     public function getBaseUri()
     {
         if ($this->getMode() == 'sandbox') {
-            return 'https://apis.sandbox.flexshopper.com/v3/';
+            return 'https://apis.sandbox.flexshopper.com/v3';
         }
-        return 'https://apis.flexshopper.com/v3/';
+        return 'https://apis.flexshopper.com/v3';
     }
 
     public function getAuthKey()
