@@ -22,7 +22,7 @@ class OrderPlaceObserver implements ObserverInterface
     /**
      * @var Data
      */
-    private Data $helper;
+    private $helper;
 
     public function __construct(
         \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
