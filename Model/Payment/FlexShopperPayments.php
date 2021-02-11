@@ -8,6 +8,7 @@ use FlexShopper\Payments\Model\Client;
 use Magento\CatalogInventory\Model\Configuration;
 use Magento\CatalogInventory\Model\Stock\StockItemRepository;
 use Magento\Directory\Helper\Data as DirectoryHelper;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\InventorySalesApi\Api\Data\SalesChannelInterface;
 use Magento\InventorySalesApi\Api\StockResolverInterface;
 
@@ -35,16 +36,16 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
      * @var Client
      */
     private $client;
-    
-    
+
+
 
     /**
-     * @var StockItemRepository 
+     * @var StockItemRepository
      */
     private $stockItemRepository;
 
     /**
-     * @var Configuration 
+     * @var Configuration
      */
     private $stockConfiguration;
 
@@ -88,13 +89,13 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
         //intentional blank lines in calling the constructor to prevent the ConstructorIntegrity check which is not aware of the conditional
         if (interface_exists("Magento\Framework\App\CsrfAwareActionInterface")) {
             parent::
-            __construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data, $directory);    
+            __construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data, $directory);
         }
         else {
             parent::
             __construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data);
         }
-        
+
         $this->session = $session;
         $this->helper = $helper;
         $this->client = $client;
@@ -126,7 +127,16 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
             }
         }
 
-        if ($quote->getGrandTotal() < $this->getMinimumOrdervalue()) {
+        try {
+            $minimumAmount = $this->client->getMinimumAmount();
+        } catch(\InvalidArgumentException $e) {
+            // This happens when the customer is trying to check out from a non-US IP, fail gracefully
+            // Flexshopper should not be available in this case
+            $this->logger->debug(['Invalid response from payment gateway. GeoIP in effect?']);
+            return false;
+        }
+
+        if ($quote->getGrandTotal() < $minimumAmount) {
             return false;
         }
 
@@ -151,7 +161,7 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
                             return true;
                         }
                     }
-                    
+
                 }
             }
 
@@ -163,20 +173,25 @@ class FlexShopperPayments extends \Magento\Payment\Model\Method\AbstractMethod
             return false;
         }
 
-        $stockItemInformation = $this->stockItemRepository->get($quoteItem->getProductId());
-        if($stockItemInformation) {
-            if($this->hasInfinteStock($stockItemInformation)) {
-                return false;
-            }
-            $backOrderQty = $quoteItem->getQty() - $stockItemInformation->getQty();
-            if ($backOrderQty > 0) {
-                return true;
+        try {
+            $stockItemInformation = $this->stockItemRepository->get($quoteItem->getProductId());
+            if($stockItemInformation) {
+                if($this->hasInfinteStock($stockItemInformation)) {
+                    return false;
+                }
+                $backOrderQty = $quoteItem->getQty() - $stockItemInformation->getQty();
+                if ($backOrderQty > 0) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
             else {
                 return false;
-            }
+            }    
         }
-        else {
+        catch(NoSuchEntityException $ex) {
             return false;
         }
 

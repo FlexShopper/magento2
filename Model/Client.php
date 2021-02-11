@@ -109,11 +109,11 @@ class Client
     }
 
     public function getTransaction($flexshopperId) {
-        return $this->call("/transactions/${flexshopperId}");
+        return $this->call("transactions/${flexshopperId}");
     }
 
     public function finalizeTransaction($flexshopperId) {
-        return $this->call("/transactions/${flexshopperId}/finalize", 'POST');
+        return $this->call("transactions/${flexshopperId}/finalize", 'POST');
     }
 
     public function confirmShipment($flexshopperId, $carrier = 'ground', $items = false) {
@@ -134,7 +134,7 @@ class Client
 
             $jsonBody = $this->json->serialize(['items' => $jsonItems]);
         }
-        return $this->call("/transactions/${flexshopperId}/confirm-shipment", 'POST', $jsonBody);
+        return $this->call("transactions/${flexshopperId}/confirm-shipment", 'POST', $jsonBody);
     }
 
     public function rma($flexshopperId, $items = false) {
@@ -154,12 +154,12 @@ class Client
 
             $jsonBody = $this->json->serialize(['items' => $jsonItems]);
         }
-        return $this->call("/transactions/${flexshopperId}/return-items", 'POST', $jsonBody);
+        return $this->call("transactions/${flexshopperId}/return-items", 'POST', $jsonBody);
     }
 
     public function cancelOrder($flexshopperId) {
         $jsonBody = self::EMPTY_ITEMS;
-        return $this->call("/transactions/${flexshopperId}/cancel", 'POST', $jsonBody);
+        return $this->call("transactions/${flexshopperId}/cancel", 'POST', $jsonBody);
     }
 
 }

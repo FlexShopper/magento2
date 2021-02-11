@@ -13,6 +13,7 @@ class Data extends AbstractHelper
     const CONFIG_API_KEY = 'payment/flexshopperpayments/api_key';
     const CONFIG_MIN_ORDER_VALUE = 'payment/flexshopperpayments/minimum_order_value';
     const CONFIG_BRAND_ATTRIBUTE = 'payment/flexshopperpayments/brand';
+    const CONFIG_AUTO_INVOICE = 'payment/flexshopperpayments/auto_invoice';
 
     public function getMode()
     {
@@ -49,6 +50,11 @@ class Data extends AbstractHelper
     public function getBrandAttribute()
     {
         return $this->scopeConfig->getValue(self::CONFIG_BRAND_ATTRIBUTE);
+    }
+
+    public function getAutoInvoice()
+    {
+        return $this->scopeConfig->getValue(self::CONFIG_AUTO_INVOICE);
     }
 
     /**
