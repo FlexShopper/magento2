@@ -15,7 +15,8 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "magento/framework": "^101.0.*|^102.0.*"
+        "magento/framework": "102.0.*",
+        "magento/module-checkout": "100.3.*"
     },
     "autoload": {
         "psr-4": {
