@@ -58,8 +58,8 @@ To enable the payment method go to Stores > Configuration > Sales > Payment Meth
 |Enabled  | Yes |Is the payment method enabled?|
 |Title    | FlexShopper Payments|The payment method name to display in the frontend|
 |Sandbox Mode|No|Whether the payment is in sandbox (test) or production (live) mode. Note that authentication keys are different and will be provided by FlexShopper|
-|Auth Key|o3d983j-54a2-asdas-8f27-32423asdd232|Provided by FlexShopper|
-|API Key|ewfn32ihd809p2jd90hidfnasmfd|Provided by FlexShopper|
+|Auth Key|Contact Us|Provided by FlexShopper|
+|API Key|Contact Us|Provided by FlexShopper|
 |New Order Status|Pending|The status of a newly placed FlexShopper order|
 |Minimum Order Value|500|The minimum order value for which FlexShopper displays. This is just a local cache and the value is usually pulled from FlexShopper. The minimum order amount will be communicated by FlexShopper at account creation time. We recommend setting this value to the same value that FlexShopper agreed for your account|
 |Brand Attribute|manufacturer|The product attribute that keeps the brand information for your products|
