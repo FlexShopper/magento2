@@ -63,7 +63,7 @@ To enable the payment method go to Stores > Configuration > Sales > Payment Meth
 |New Order Status|Pending|The status of a newly placed FlexShopper order|
 |Minimum Order Value|500|The minimum order value for which FlexShopper displays. This is just a local cache and the value is usually pulled from FlexShopper. The minimum order amount will be communicated by FlexShopper at account creation time. We recommend setting this value to the same value that FlexShopper agreed for your account|
 |Brand Attribute|manufacturer|The product attribute that keeps the brand information for your products|
-|Payment from Applicable Countries|All Allowed Countries|Set to restrict FlexShopper to specific countries|
+|Payment from Applicable Countries|All Allowed Countries|Set to restrict FlexShopper to the United States|
 |Payment from Applicable Countries|USA|If the above is set to "Specific Countries", choose the countries here|
 |Sort Order|20|Defines the sort order for the payment method in the frontend|
 |Debug|Yes|Allows logging debugging information (API calls and responses) for the FlexShopper API|
@@ -83,7 +83,7 @@ You must set this to "Yes" for all products that can be paid with FlexShopper.
 - the order must be over the minimum order amount that was agreed with FlexShopper
 - no product in the cart must trigger a backorder
 - the API keys must be set and be valid
-- if country restriction is enabled, the customer's address must be from one of the approved countries
+- if country restriction is enabled, FlexShopper only does business inside the United States
 
 
 ### View the FlexShopper payment method in the fronted
